@@ -25,8 +25,8 @@
 ## React Three Rapier
 - [Github](https://github.com/pmndrs/react-three-rapier)
 - [Github README](https://github.com/pmndrs/react-three-rapier#readme)
-- [R3F Examples](https://docs.pmnd.rs/react-three-fiber/getting-started/examples)*
-(* Search physics examples by typing *"rapier"*)
+- [R3F Examples](https://docs.pmnd.rs/react-three-fiber/getting-started/examples)
+(Search physics examples by typing *"rapier"*)
 
 ## Three.js Documentation
 - [Clock](https://threejs.org/docs/#api/en/core/Clock)
@@ -35,6 +35,63 @@
 - [Vector3](https://threejs.org/docs/?q=vector#api/en/math/Vector3)
 - [Quaternion](https://threejs.org/docs/?q=quaternion#api/en/math/Quaternion)
 - [Euler](https://threejs.org/docs/?q=euler#api/en/math/Euler)
+
+## Set up
+
+### 0. Installation
+```
+npm install @react-three/rapier@1.1
+```
+
+### 1. Import <Physics>
+You need to wrap all meshes with <Physics> tag.
+```
+import { Physics } from "@react-three/rapier";
+
+....
+
+<Physics>
+    <mesh .... />
+
+    ....
+
+</Physics>
+```
+
+### 2. Import <RigidBody>
+You need to wrap meshes individually with <RigidBody> tag.
+```
+import { RigidBody, Physics } from "@react-three/rapier";
+
+....
+
+<Physics>
+    <RigidBody>
+        <mesh .... />
+    </RigidBody>
+
+    ....
+
+</Physics>
+```
+
+### 3. Turn a floor "fixed"
+Add **fixed** to "type" attibute. (Default type is **dynamic**).
+```
+<Physics>
+    <RigidBody>
+        <mesh .... />
+    </RigidBody>
+
+    ....
+
+    <RigidBody type="fixed">
+        <mesh .... />
+    </RigidBody>
+</Physics>
+```
+
+
 
 
 

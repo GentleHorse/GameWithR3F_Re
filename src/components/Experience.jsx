@@ -1,28 +1,37 @@
-import { OrbitControls } from '@react-three/drei'
-import Lights from './utils/Lights.jsx'
+import { OrbitControls } from "@react-three/drei";
+import Lights from "./utils/Lights.jsx";
+import { Perf } from "r3f-perf";
+import { RigidBody, Physics } from "@react-three/rapier";
 
-export default function Experience()
-{
-    return <>
+export default function Experience() {
+  return (
+    <>
+      <OrbitControls makeDefault />
 
-        <OrbitControls makeDefault />
+      <Lights />
 
-        <Lights />
+      <Perf position="top-left" />
 
-        <mesh castShadow position-x={ - 2 }>
+      <Physics>
+        <RigidBody>
+          <mesh castShadow position={[-2, 2, 0]}>
             <sphereGeometry />
             <meshStandardMaterial color="orange" />
+          </mesh>
+        </RigidBody>
+
+        <mesh castShadow position={[2, 2, 0]} scale={1.5}>
+          <boxGeometry />
+          <meshStandardMaterial color="mediumpurple" />
         </mesh>
 
-        <mesh castShadow position-x={ 2 } scale={ 1.5 }>
+        <RigidBody type="fixed">
+          <mesh receiveShadow position-y={-1} scale={[10, 0.1, 10]}>
             <boxGeometry />
-            <meshStandardMaterial color="mediumpurple" />
-        </mesh>
-
-        <mesh receiveShadow position-y={ - 1 } rotation-x={ - Math.PI * 0.5 } scale={ 10 }>
-            <planeGeometry />
             <meshStandardMaterial color="greenyellow" />
-        </mesh>
-
+          </mesh>
+        </RigidBody>
+      </Physics>
     </>
+  );
 }
