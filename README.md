@@ -95,7 +95,7 @@ Add **"fixed"** to "type" attibute. (Default type is **"dynamic"**).
 ```
 
 ### 4. Debugging
-![debug](./public/images/screenshots/debug.png)
+![debug](./public/images/screenshots/debug.png)<br>
 Add **"debug"** attribute to `<Physics>` tag. <br>
 Becareful, debug wireframes have an impact on performance.
 ```
@@ -116,7 +116,7 @@ Becareful, debug wireframes have an impact on performance.
 ![colliders overview](./public/images/screenshots/overview-colliders.png)
 
 ### Cuboid collider
-![collider cuboid](./public/images/screenshots/collider-cuboid.png)
+![collider cuboid](./public/images/screenshots/collider-cuboid.png)<br>
 Cuboid collider is a default collider and it's automatically applied to a mesh. <br>
 And if you include multiple meshes in one `<RigidBody>` tag, it behaves as one connected cuboid collider body.
 ```
@@ -140,7 +140,7 @@ Check Bruno Simon's portfolio....
 ![bruno simon's portfolio, physics](./public/images/screenshots/bruno-simon-portfolio-physics-collider-example.png)
 
 ### Ball collider
-![collider ball](./public/images/screenshots/collider-ball.png)
+![collider ball](./public/images/screenshots/collider-ball.png)<br>
 Set "colliders" attibute of `<RigidBody>` to **"ball"**.
 ```
 <RigidBody colliders="ball">
@@ -149,7 +149,7 @@ Set "colliders" attibute of `<RigidBody>` to **"ball"**.
 ```
 
 ### Hull collider
-![collider hull](./public/images/screenshots/collider-hull.png)
+![collider hull](./public/images/screenshots/collider-hull.png)<br>
 Set "colliders" attibute of `<RigidBody>` to **"hull"**. <br>
 It's like putting an elastic membrane around the object.
 ```
@@ -159,7 +159,7 @@ It's like putting an elastic membrane around the object.
 ```
 
 ### Trimesh collider
-![collider trimesh](./public/images/screenshots/collider-trimesh.png)
+![collider trimesh](./public/images/screenshots/collider-trimesh.png)<br>
 Set "colliders" attibute of `<RigidBody>` to **"trimesh"**. <br>
 You should avoid using trimesh with dynamic **RigidBodies** (dynamic objects are the ones falling like the sphere and the torus). The reason is that colliders generated with a trimesh are empty on the inside and it makes collision detection more complicated and prone to bugs. A fast object might get through the trimesh or end up stuck on its surface. This doesn’t mean that you can’t use it, but, preferably, you should use it on fixed RigidBodies. Otherwise, you should expect some bugs.
 ```
@@ -190,7 +190,7 @@ Since React Three Rapier implements Rapier's colliders, we can use the Rapier do
 - [HeightfieldCollider](https://rapier.rs/javascript3d/classes/Heightfield.html)
 
 #### CuboidCollider
-![CuboidCollider](./public/images/screenshots/CuboidCollioder.png)
+![CuboidCollider](./public/images/screenshots/CuboidCollioder.png)<br>
 If you want to put mesh inside CuboidCollider, then put `<mesh>` and `<CuboidCollider>` at the center and add move `<RigidBody>` by adding **"position"** and **"rotation"** attributes to it. <br>
 Be aware, **"scale"** is not suppported by `<RigidBody>`!
 ```
@@ -209,7 +209,7 @@ import { CuboidCollider, .... } from "@react-three/rapier";
 ```
 
 #### Multiple colliders
-![multiple colliders](./public/images/screenshots/multiple-colliders.png)
+![multiple colliders](./public/images/screenshots/multiple-colliders.png)<br>
 You can create multiple colliders inside one `<RigidBody>`. <br>
 To adjust each collider, you can do by adding **"position"** and **"rotation"** attributes. respectively.
 ```
@@ -234,7 +234,7 @@ To adjust each collider, you can do by adding **"position"** and **"rotation"** 
 ```
 
 #### BallCollider
-![BallCollider](./public/images/screenshots/BallCollioder.png)
+![BallCollider](./public/images/screenshots/BallCollioder.png)<br>
 ```
 import { BallCollider, .... } from "@react-three/rapier";
 
