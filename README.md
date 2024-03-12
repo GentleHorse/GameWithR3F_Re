@@ -400,6 +400,7 @@ You can apply different gravity to each object respectively with **"gravityScale
 ```
 
 #### 4-1-1. Change the gravity at run time
+![reverse gravity](./public/images/screenshots/reverse-gravity-button.png)<br> 
 Toggle reverse & normal gravity with the botton. <br>
 In addition, wake up target meshes at the same time.
 ```
@@ -438,6 +439,7 @@ You can control the bounciness with `restitution` attribute. <br>
 The default value is `0`, meaning that it doesn't bounce at all. <br>
 
 #### 4-2-0. Apply restitution
+![tweak restitution](./public/images/screenshots/restitution-set-to-1.png)<br> 
 If you want to make an object bouncy, you should also consider its contact floor. If you don't set restitution of the floor, it means the object falls onto some solid material plane such as metal or concrete. So if you want to make the object falling in a good bouncy way, you should set the floor restitution. If you set both restitutions of the falling object and the contact floor to `1`, it bounces 100%.  
 ```
 <RigidBody .... restitution={1}>     // A falling object  
@@ -457,6 +459,7 @@ It's possible to change that rule, but it has to be done with the `Collider` its
 Friction lets us decide how much the surface are supposed to rub off on each other. You can control it with the `friction` attribute and the default value is `0.7`(`0` is no friction, like on the ice).
 
 #### 4-3-0. Apply friction
+![frictin cube](./public/images/screenshots/friction-cube.png)<br> 
 If you want to make an object slide on the floor, you should also make sure that its contact floor has the same low friction param. 
 ```
 <RigidBody .... friction={0}>     // A sliding object  
@@ -466,4 +469,150 @@ If you want to make an object slide on the floor, you should also make sure that
 <RigidBody .... friction={0}>     // A contacting floor
     <mesh .... />
 </RigidBody>
+```
+
+### 4-4. Mass
+The mass of the `RigidBody` is automatically calculated as the sum of the masses of the `Colliders` that make up the `RigidBody`. The mass of the `Colliders` `is automatically calculated accordning to their shape and volume. <br>
+In other words, big object will automatically have a bigger mass.<br><br>
+The mass won't change how fast an object falls (which means all objects fall at the same speed if there's no air friction or other affecting stuff). However, the mass will influence the forces involved. If two objects collide while one has a huge mass and the other one has a small mass, the huge mass will push away the small mass. <br>
+
+#### 4-4-0. Change mass of objects
+![cube mass 0.5](./public/images/screenshots/set-cube-mass-low.png)
+In order to tweak objects' mass, you need to create `Collider` by yourself. <br>
+`1` is default, and if you set the lower value like `0.5`, it behaves as if it's made of cardboard, and if you set the higher value like `2`, it does of metal. Thus, the mass affects behaviours when forces are applied.
+```
+<RigidBody .... colliders={false}>
+    <CuboidCollider mass={0.5} args={[0.5, 0.5, 0.5]} />
+
+    <mesh castShadow onClick={handleCubeJump}>
+        <boxGeometry />
+        <meshStandardMaterial color="purple" />
+    </mesh>
+</RigidBody>
+```
+
+#### 4-4-1. Change apply force / impluse flexibly depending on object mass
+![same force applied behaviour](./public/images/screenshots/same-force-applied-behaviour.png)
+Since mass affects force appiled behaviours, maybe you need to take care the force strength. In that case, you can tweak like below to maintain the same behaviour regardless of mass. 
+```
+// Handler - cube jump
+const handleCubeJump = () => {
+const mass = cube.current.mass();       // Accessing the mass of object
+
+cube.current.applyImpulse({ x: 0, y: 5 * mass, z: 0 }, true);   // Here's trick
+cube.current.applyTorqueImpulse(
+    {
+    x: Math.random() - 0.5,
+    y: Math.random() - 0.5,
+    z: Math.random() - 0.5,
+    },
+    true
+);
+};
+
+....
+
+    <RigidBody .... colliders={false}>
+        <CuboidCollider mass={2} args={[0.5, 0.5, 0.5]} />
+
+        <mesh castShadow onClick={handleCubeJump}>
+            <boxGeometry />
+            <meshStandardMaterial color="purple" />
+        </mesh>
+    </RigidBody>
+
+```
+
+### 4-5. Position and rotation
+We can change the position & rotatino of `<RigidBody>` through their `position` and `rotation` attributes. But for **"dynamic" and "fixed"** object, you SHOULD NOT CHANGE THOESE VALUES!! Thus, if you want to move an object, you should apply forces to it.<br><br>
+If you really really need update the object position & rotation directly, there are below two options.
+
+#### 4-5-0. If you need to move it just once
+You can do it with the appropriate methods, but you'll have to reset velocities that are currently applied on it and also make sure to not move it inside another `RigidBody`.
+
+#### 4-5-1. If you need to move it in time (like a carousel or moving obstacle)
+You can use the `kinematic` types to make objects move & rotate and it's often used for character controllers and carousels. There's two types: `kinematicPosition` and `kinematicVelocity`.
+
+#### 4-5-2. "kinematicPosition" vs "kinematicVelocity"
+`kinematicPosition`: you provide the next position and it'll update the object velocity accordingly.<br>
+`kinematicVelocity`: you provide the velocity directly.
+
+#### 4-5-3. "kinematic" objects don't move by forces
+Objects whose type are `kinematic` are not affected by forces and move. The only way to move them is using `kinematicPosition` or  `kinematicVelocity` to change their positions.
+
+#### 4-5-4. "setNextKinematicTranslation" vs "setNextKinematicRotation"
+`setNextKinematicTranslation` (Fn): move an object 
+`setNextKinematicRotation` (Fn): rotate an object
+
+#### 4-5-5. Rotate the twister 
+![twiser rotate](./public/images/screenshots/twister-rotation.png)
+The function `setNextKinematicRotation` is expecting a Quaternion and not a Euler. Quaternion are harder to express and you cannot write just one directly. Therefore, you need to take several steps properly. <br><br>
+
+0. Set the object type to `kinematicPosition`
+1. Create a Three.js **"Euler"**
+2. Create a Three.js **"Quaternion"**
+3. Send that **"Quaternion"** to `setNextKinematicRotation`
+
+<br><br>
+
+```
+const twister = useRef();
+
+....
+
+// Rotate the twister with each frame
+useFrame((state, delta) => {
+    const time = state.clock.getElapsedTime();
+
+    const eulerRotation = new THREE.Euler(0, time, 0);
+    const quaternionRotation = new THREE.Quaternion();
+    quaternionRotation.setFromEuler(eulerRotation);
+
+    twister.current.setNextKinematicRotation(quaternionRotation);
+});
+
+....
+
+    {/* TWISTER */}
+    <RigidBody .... type="kinematicPosition">
+        <mesh .... />
+    </RigidBody>
+
+```
+
+#### 4-5-6. Move the twister position
+![twister move position](./public/images/screenshots/twister-move-position.png)
+```
+const twister = useRef();
+
+....
+
+// Rotate & move the twister with each frame
+useFrame((state, delta) => {
+    // Fetch time
+    const time = state.clock.getElapsedTime();
+
+    // For rotating the twister
+    const eulerRotation = new THREE.Euler(0, time, 0);
+    const quaternionRotation = new THREE.Quaternion();
+    quaternionRotation.setFromEuler(eulerRotation);
+
+    twister.current.setNextKinematicRotation(quaternionRotation);
+
+    // For moving positions of the twister
+    const angle = time * 0.5;
+
+    const x = Math.cos(angle) * 2;
+    const z = Math.sin(angle) * 2;
+
+    twister.current.setNextKinematicTranslation({x: x, y: -0.8, z: z})
+
+});
+
+....
+
+    {/* TWISTER */}
+    <RigidBody .... type="kinematicPosition">
+        <mesh .... />
+    </RigidBody>
 ```
