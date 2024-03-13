@@ -44,7 +44,6 @@
 - [SphereGeometry](https://threejs.org/docs/#api/en/geometries/SphereGeometry)
 - [TorusGeometry](https://threejs.org/docs/#api/en/geometries/TorusGeometry)
 - [TorusKnotGeometry](https://threejs.org/docs/#api/en/geometries/TorusKnotGeometry)
-
 - [CapsuleGeometry](https://threejs.org/docs/#api/en/geometries/CapsuleGeometry)
 - [CircleGeometry](https://threejs.org/docs/#api/en/geometries/CircleGeometry)
 - [CylinderGeometry](https://threejs.org/docs/#api/en/geometries/CylinderGeometry)
@@ -103,6 +102,12 @@ import { RigidBody, Physics } from "@react-three/rapier";
 
 </Physics>
 ```
+
+#### 1-2-0. `<RigidBody>` types
+- `dynamic`: The body is affected by external forces and contacts. This is the default type of RigidBody. 
+- `fixed`: The body cannot move.  It acts as if it has an infinite mass and will not be affected by any force. It will continue to collide with dynamic bodies but not with fixed nor with kinematic bodies. This is typically used for the ground or for temporarily freezing a body.
+- `kinematicPosition`: The body position must not be altered by the physics engine. The user is free to set its next position and the body velocity will be deduced at each update accordingly to ensure a realistic behavior of dynamic bodies in contact with it. This is typically used for moving platforms, elevators, etc.
+- `kinematicVelocity`: The body velocity must not be altered by the physics engine. The user is free to set its velocity and the next body position will be deduced at each update accordingly to ensure a realistic behavior of dynamic bodies in contact with it. This is typically used for moving platforms, elevators, etc.
 
 ### 1-3. Turn a floor "fixed"
 Add **"fixed"** to "type" attibute. (Default type is **"dynamic"**).
@@ -315,7 +320,7 @@ Via reference, you can access 'Rapier' physical body (even the reference is link
 [@dimforge/rapier3d/RigidBody](https://rapier.rs/javascript3d/classes/RigidBody.html) <br>
 ![RigidBody methods](./public/images/screenshots/rigidbody-methods.png)<br>
 
-### 3-3. 'addForce' vs 'applyImpulse'
+### 3-3. `addForce` vs `applyImpulse`
 `addForce` is used to apply a force that lasts for a quite long time (like the wind).<br><br>
 `applyImpulse` is used to apply a short force for a very short period of time (like for a projectile).
 
@@ -329,7 +334,7 @@ const handleCubeJump = () => {
   };
 ```
 
-### 3-5. Rotation via 'addTorque' vs 'applyTorqueImpluse'
+### 3-5. Rotation via `addTorque` vs `applyTorqueImpluse`
 `addTorque` is equivalent of `addForce`. <br>
 `applyTorqueImpluse` is equivalent of `applyImplulse`.
 
@@ -533,14 +538,14 @@ You can do it with the appropriate methods, but you'll have to reset velocities 
 #### 4-5-1. If you need to move it in time (like a carousel or moving obstacle)
 You can use the `kinematic` types to make objects move & rotate and it's often used for character controllers and carousels. There's two types: `kinematicPosition` and `kinematicVelocity`.
 
-#### 4-5-2. "kinematicPosition" vs "kinematicVelocity"
+#### 4-5-2. `kinematicPosition` vs `kinematicVelocity`
 `kinematicPosition`: you provide the next position and it'll update the object velocity accordingly.<br>
 `kinematicVelocity`: you provide the velocity directly.
 
-#### 4-5-3. "kinematic" objects don't move by forces
+#### 4-5-3. `kinematic` objects don't move by forces
 Objects whose type are `kinematic` are not affected by forces and move. The only way to move them is using `kinematicPosition` or  `kinematicVelocity` to change their positions.
 
-#### 4-5-4. "setNextKinematicTranslation" vs "setNextKinematicRotation"
+#### 4-5-4. `setNextKinematicTranslation` vs `setNextKinematicRotation`
 `setNextKinematicTranslation` (Fn): move an object 
 `setNextKinematicRotation` (Fn): rotate an object
 
@@ -615,4 +620,70 @@ useFrame((state, delta) => {
     <RigidBody .... type="kinematicPosition">
         <mesh .... />
     </RigidBody>
+```
+
+### 4-6. Event
+We can listen to events by adding attributes directly on the `<RigidBody>`. <br><br>
+
+(cf. `onClick()` event ---> `<mesh>`, `ref` ---> `<RigidBody>`)
+
+#### 4-6-0. Four different events
+- `onCollisionEnter`: when the `RigidBody` hit something
+- `onCollisionExit`: when the `RigidBody` separates from the object it just hit
+- `onSleep`: when the `RigidBody` starts sleeping
+- `onWake`: when the `RigidBody` stops sleeping
+
+#### 4-6-1. Sleeping and wake up (only `dynamic` type, not `fix` & `kinematic` types)
+When a dynamic rigid-body doesn't move (or moves very slowly) during **a few seconds**, it will be **marked as sleeping** by the physics pipeline. Rigid-bodies marked as sleeping are no longer simulated by the physics engine until they are woken up. That way the physics engine doesn't waste any computational resources simulating objects that don't actually move. They are woken up automatically whenever another non-sleeping rigid-body starts interacting with them (either with a joint, or with one of its attached colliders generating contacts).
+
+#### 4-6-2. `onSleep` and `onWake` events
+You can add `onSleep` and `onWake` events to `<RigidBody>` to trigger some functions.
+```
+<RigidBody 
+    ....
+    onSleep={() => { console.log("Sphere: sleep"); }}
+    onWake={() => { console.log("Sphere: wake up"); }}
+>
+    <mesh ... />
+</RigidBody>
+```
+
+#### 4-6-3. `onCollisionEnter` events
+You can add the `onCollisionEnter` event to `<RigidBody>` to trigger some functions.
+```
+<RigidBody 
+    ....
+    onCollisionEnter={() => { console.log("Cube: collision!"); }}
+>
+    <mesh ... />
+</RigidBody>
+```
+
+#### 4-6-4. Import sounds for collision happening
+In order to instantiate the audio only once in case the component is being re-rendered, call `useState()` at the begining of the `Experience` component and send it a function which will return an instance of `Audio` class.<br><br>
+
+Most browsers will prevent you from playing sounds if the user hasn't interacted with the page first, so you need to click or do something on the screen before the sound plays.
+```
+  /**
+   * Sate - import a sound
+   */
+  const [hitSound] = useState(() => {
+    return new Audio("./sounds/hit.mp3");
+  });
+
+  /**
+   * Function - collision sounds
+   */
+  const collisionEnter = () => {
+    hitSound.currentTime = 0; // Set time position to 0 seconds
+    hitSound.volume = Math.random(); // Randomize sound volume
+    hitSound.play();
+  };
+
+  ....
+
+    <RigidBody .... onCollisionEnter={collisionEnter}>
+        <mesh ... />
+    </RigidBody>
+
 ```

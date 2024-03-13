@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState } from "react";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
@@ -17,13 +17,24 @@ export default function Experience() {
   const button = useRef();
   const twister = useRef();
 
-  // State - managing gravity
+  /**
+   * State - managing gravity
+   */
   const [reveseGravityParam, setReverseGravityParam] = useState(1);
 
-  // Handler - cube jump (also adapt to reverse gravity)
+  /**
+   * Sate - import a sound
+   */
+  const [hitSound] = useState(() => {
+    return new Audio("./sounds/hit.mp3");
+  });
+
+  /**
+   * Handler - cube jump (also adapt to reverse gravity)
+   */
   const handleCubeJump = () => {
     const mass = cube.current.mass();
-    console.log(mass);
+
     cube.current.applyImpulse(
       { x: 0, y: 5 * reveseGravityParam * mass, z: 0 },
       true
@@ -38,7 +49,9 @@ export default function Experience() {
     );
   };
 
-  // Handler - reverse gravity
+  /**
+   * Handler - reverse gravity
+   */
   const handleReverseGravity = () => {
     setReverseGravityParam(
       (prevReveseGravityParam) => prevReveseGravityParam * -1
@@ -48,7 +61,9 @@ export default function Experience() {
     button.current.wakeUp();
   };
 
-  // Rotate & move the twister with each frame
+  /**
+   * Function - rotate & move the twister with each frame
+   */
   useFrame((state, delta) => {
     // Rotation
     const time = state.clock.getElapsedTime();
@@ -65,8 +80,17 @@ export default function Experience() {
     const x = Math.cos(angle) * 2;
     const z = Math.sin(angle) * 2;
 
-    twister.current.setNextKinematicTranslation({x: x, y: -0.8, z: z})
+    twister.current.setNextKinematicTranslation({ x: x, y: -0.8, z: z });
   });
+
+  /**
+   * Function - collision sounds
+   */
+  const collisionEnter = () => {
+    hitSound.currentTime = 0; // Set time position to 0 seconds
+    hitSound.volume = Math.random(); // Randomize sound volume
+    hitSound.play();
+  };
 
   return (
     <>
@@ -84,6 +108,13 @@ export default function Experience() {
           gravityScale={1}
           restitution={0.5}
           friction={0.7}
+          onSleep={() => {
+            console.log("Sphere: sleep");
+          }}
+          onWake={() => {
+            console.log("Sphere: wake up");
+          }}
+          onCollisionEnter={collisionEnter}
         >
           <mesh castShadow position={[-1.5, 2, 0]}>
             <sphereGeometry />
@@ -99,6 +130,13 @@ export default function Experience() {
           restitution={0.5}
           friction={0.7}
           colliders={false}
+          onSleep={() => {
+            console.log("Cube: sleep");
+          }}
+          onWake={() => {
+            console.log("Cube: wake up");
+          }}
+          onCollisionEnter={collisionEnter}
         >
           <CuboidCollider mass={1} args={[0.5, 0.5, 0.5]} />
           <mesh castShadow onClick={handleCubeJump}>
