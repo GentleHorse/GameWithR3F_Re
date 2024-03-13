@@ -9,10 +9,16 @@ import {
   CuboidCollider,
   RigidBody,
   Physics,
+  CylinderCollider,
 } from "@react-three/rapier";
-import useSound from 'use-sound';
-import hitSound from '../../public/sounds/hit.mp3';
-import gravitySwitch from '../../public/sounds/gravity-switch.wav';
+import useSound from "use-sound";
+import hitSound from "../../public/sounds/hit.mp3";
+import gravitySwitch from "../../public/sounds/gravity-switch.wav";
+import { Unicorn } from "./models/Unicorn.jsx";
+import { Bear } from "./models/Bear.jsx";
+import { Hamburger } from "./models/Hamburger.jsx";
+import { Pot } from "./models/Pot.jsx";
+import { PotLid } from "./models/PotLid.jsx";
 
 export default function Experience() {
   const sphere = useRef();
@@ -30,6 +36,10 @@ export default function Experience() {
    */
   const [playHitSound] = useSound(hitSound);
   const [playGravitySwitchSound] = useSound(gravitySwitch);
+
+  /**
+   * Load models
+   */
 
   /**
    * Handler - cube jump (also adapt to reverse gravity)
@@ -58,7 +68,7 @@ export default function Experience() {
     setReverseGravityParam(
       (prevReveseGravityParam) => prevReveseGravityParam * -1
     );
-    sphere.current.wakeUp(); 
+    sphere.current.wakeUp();
     cube.current.wakeUp();
 
     playGravitySwitchSound();
@@ -94,7 +104,7 @@ export default function Experience() {
 
       <Lights />
 
-      <Physics gravity={[0, -9.81 * reveseGravityParam, 0]} debug>
+      <Physics gravity={[0, -9.81 * reveseGravityParam, 0]} debug={true}>
         {/* SPHERE */}
         <RigidBody
           ref={sphere}
@@ -140,13 +150,8 @@ export default function Experience() {
         </RigidBody>
 
         {/* TWISTER */}
-        <RigidBody
-          ref={twister}
-          position={[0, -0.8, 0]}
-          friction={0}
-          type="kinematicPosition"
-        >
-          <mesh castShadow scale={[0.4, 0.4, 3]}>
+        <RigidBody ref={twister} friction={0} type="kinematicPosition">
+          <mesh castShadow scale={[0.4, 0.4, 3]} position={[0, 1, 0]}>
             <boxGeometry />
             <meshStandardMaterial color="snow" />
           </mesh>
@@ -166,20 +171,32 @@ export default function Experience() {
           </group>
         </RigidBody>
 
-        {/* CEILING */}
-        <RigidBody type="fixed" restitution={0} friction={0.7}>
-          <mesh receiveShadow position-y={3.5}>
-            <boxGeometry args={[10, 0.5, 10]} />
-            <meshStandardMaterial color="lightblue" />
-          </mesh>
-        </RigidBody>
-
         {/* FLOOR */}
         <RigidBody type="fixed" restitution={0} friction={0.7}>
           <mesh receiveShadow position-y={-1.25}>
             <boxGeometry args={[10, 0.5, 10]} />
             <meshStandardMaterial color="lightblue" />
           </mesh>
+        </RigidBody>
+
+        {/* POT LID */}
+        <RigidBody
+          type="fixed"
+          colliders={false}
+          scale={15}
+          position={[0, 8, 0]}
+        >
+          <CylinderCollider args={[0.025, 0.35]} position={[0, 0.025, 0]} />
+          <PotLid />
+        </RigidBody>
+
+        {/* POT BODY */}
+        <RigidBody type="fixed" colliders="trimesh">
+          <Pot
+            scale={15}
+            position={[0, -1, 0]}
+            rotation={[0, Math.PI * 0.5, 0]}
+          />
         </RigidBody>
       </Physics>
     </>

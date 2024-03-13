@@ -688,14 +688,10 @@ Most browsers will prevent you from playing sounds if the user hasn't interacted
 ```
 
 #### 4-6-4. Sounds for collision happening with `use-sound`
-**use-sound documentations** <br>
-- [Github](https://github.com/joshwcomeau/use-sound?tab=readme-ov-file)
-- [The tutorials](https://www.joshwcomeau.com/react/announcing-use-sound-react-hook/)
-- [Quick examples](https://use-sound.netlify.app/?path=/story/usesound--simple)
-<br>
-**Free sound resource** <br>
-- [freesound](https://freesound.org/)
-<br><br>
+- [use-sound Github](https://github.com/joshwcomeau/use-sound?tab=readme-ov-file)
+- [use-sound tutorials](https://www.joshwcomeau.com/react/announcing-use-sound-react-hook/)
+- [use-sound quick examples](https://use-sound.netlify.app/?path=/story/usesound--simple)
+- [freesound](https://freesound.org/) <br><br>
 ```
 import useSound from 'use-sound';
 import hitSound from '../../public/sounds/hit.mp3';
@@ -710,3 +706,4 @@ const [playHitSound] = useSound(hitSound);
         <mesh ... />
     </RigidBody>
 ```
+### 4-7. Model
