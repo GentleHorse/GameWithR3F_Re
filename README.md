@@ -416,9 +416,9 @@ const handleReverseGravity = () => {
       (prevReveseGravityParam) => prevReveseGravityParam * -1
     );
 
+    // Need to wake up sleeping objects
     sphere.current.wakeUp();
     cube.current.wakeUp();
-    button.current.wakeUp();
   };
 
 ....
@@ -659,7 +659,7 @@ You can add the `onCollisionEnter` event to `<RigidBody>` to trigger some functi
 </RigidBody>
 ```
 
-#### 4-6-4. Import sounds for collision happening
+#### 4-6-4. Sounds for collision happening with `Audio` class
 In order to instantiate the audio only once in case the component is being re-rendered, call `useState()` at the begining of the `Experience` component and send it a function which will return an instance of `Audio` class.<br><br>
 
 Most browsers will prevent you from playing sounds if the user hasn't interacted with the page first, so you need to click or do something on the screen before the sound plays.
@@ -685,5 +685,28 @@ Most browsers will prevent you from playing sounds if the user hasn't interacted
     <RigidBody .... onCollisionEnter={collisionEnter}>
         <mesh ... />
     </RigidBody>
+```
 
+#### 4-6-4. Sounds for collision happening with `use-sound`
+**use-sound documentations** <br>
+- [Github](https://github.com/joshwcomeau/use-sound?tab=readme-ov-file)
+- [The tutorials](https://www.joshwcomeau.com/react/announcing-use-sound-react-hook/)
+- [Quick examples](https://use-sound.netlify.app/?path=/story/usesound--simple)
+<br>
+**Free sound resource** <br>
+- [freesound](https://freesound.org/)
+<br><br>
+```
+import useSound from 'use-sound';
+import hitSound from '../../public/sounds/hit.mp3';
+
+....
+
+const [playHitSound] = useSound(hitSound);
+
+....
+
+    <RigidBody .... onCollisionEnter={playHitSound}>
+        <mesh ... />
+    </RigidBody>
 ```

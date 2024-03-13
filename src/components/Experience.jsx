@@ -10,6 +10,9 @@ import {
   RigidBody,
   Physics,
 } from "@react-three/rapier";
+import useSound from 'use-sound';
+import hitSound from '../../public/sounds/hit.mp3';
+import gravitySwitch from '../../public/sounds/gravity-switch.wav';
 
 export default function Experience() {
   const sphere = useRef();
@@ -23,11 +26,10 @@ export default function Experience() {
   const [reveseGravityParam, setReverseGravityParam] = useState(1);
 
   /**
-   * Sate - import a sound
+   * Set up sounds
    */
-  const [hitSound] = useState(() => {
-    return new Audio("./sounds/hit.mp3");
-  });
+  const [playHitSound] = useSound(hitSound);
+  const [playGravitySwitchSound] = useSound(gravitySwitch);
 
   /**
    * Handler - cube jump (also adapt to reverse gravity)
@@ -56,9 +58,10 @@ export default function Experience() {
     setReverseGravityParam(
       (prevReveseGravityParam) => prevReveseGravityParam * -1
     );
-    sphere.current.wakeUp();
+    sphere.current.wakeUp(); 
     cube.current.wakeUp();
-    button.current.wakeUp();
+
+    playGravitySwitchSound();
   };
 
   /**
@@ -83,15 +86,6 @@ export default function Experience() {
     twister.current.setNextKinematicTranslation({ x: x, y: -0.8, z: z });
   });
 
-  /**
-   * Function - collision sounds
-   */
-  const collisionEnter = () => {
-    hitSound.currentTime = 0; // Set time position to 0 seconds
-    hitSound.volume = Math.random(); // Randomize sound volume
-    hitSound.play();
-  };
-
   return (
     <>
       <OrbitControls makeDefault />
@@ -114,7 +108,7 @@ export default function Experience() {
           onWake={() => {
             console.log("Sphere: wake up");
           }}
-          onCollisionEnter={collisionEnter}
+          onCollisionEnter={playHitSound}
         >
           <mesh castShadow position={[-1.5, 2, 0]}>
             <sphereGeometry />
@@ -136,7 +130,7 @@ export default function Experience() {
           onWake={() => {
             console.log("Cube: wake up");
           }}
-          onCollisionEnter={collisionEnter}
+          onCollisionEnter={playHitSound}
         >
           <CuboidCollider mass={1} args={[0.5, 0.5, 0.5]} />
           <mesh castShadow onClick={handleCubeJump}>
