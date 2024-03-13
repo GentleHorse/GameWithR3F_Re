@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useMemo } from "react";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 import { Environment, OrbitControls, useGLTF } from "@react-three/drei";
@@ -6,7 +6,6 @@ import { Geometry, Base, Addition } from "@react-three/csg";
 import Lights from "./components/utils/Lights.jsx";
 import { Perf } from "r3f-perf";
 import {
-  BallCollider,
   CuboidCollider,
   RigidBody,
   Physics,
@@ -43,26 +42,29 @@ export default function Experience() {
   console.log(clear);
 
   /**
-   * Objects ref and count
+   * Object instances' count & matrices
    */
-  const objects = useRef();
   const objectsCount = 100;
+  const instances = useMemo(() => {
+    const instances = [];
 
-  /**
-   * Provide matrices for hundreds of objects
-   */
-  useEffect(() => {
     for (let i = 0; i < objectsCount; i++) {
-      const matrix = new THREE.Matrix4();
-
-      matrix.compose(
-        new THREE.Vector3(i * 2, 0, 0),
-        new THREE.Quaternion(),
-        new THREE.Vector3(1, 1, 1)
-      );
-
-      objects.current.setMatrixAt(i, matrix);
+      instances.push({
+        key: "instance_" + i,
+        position: [
+          (Math.random() - 0.5) * 8,
+          6 + i * 0.2, 
+          (Math.random() - 0.5) * 8
+        ],
+        rotation: [
+          Math.random(), 
+          Math.random(), 
+          Math.random()
+        ],
+      });
     }
+
+    return instances;
   }, []);
 
   /**
@@ -130,7 +132,7 @@ export default function Experience() {
 
       <Lights />
 
-      <Physics gravity={[0, -9.81 * reveseGravityParam, 0]} debug={true}>
+      <Physics gravity={[0, -9.81 * reveseGravityParam, 0]} debug={false}>
         {/* SPHERE */}
         <RigidBody
           ref={sphere}
@@ -176,12 +178,8 @@ export default function Experience() {
         </RigidBody>
 
         {/* HUNDREDS OF OBJECTS */}
-        <InstancedRigidBodies>
-          <instancedMesh
-            castShadow
-            ref={objects}
-            args={[undefined, undefined, objectsCount]}
-          >
+        <InstancedRigidBodies instances={instances}>
+          <instancedMesh castShadow args={[undefined, undefined, objectsCount]}>
             <Geometry useGroups>
               <Base
                 scale={0.15}
@@ -199,7 +197,7 @@ export default function Experience() {
 
         {/* TWISTER */}
         <RigidBody ref={twister} friction={0} type="kinematicPosition">
-          <mesh castShadow scale={[0.4, 0.4, 3]} position={[0, 1, 0]}>
+          <mesh castShadow scale={[0.4, 0.4, 3]} position={[0, 0.5, 0]}>
             <boxGeometry />
             <meshStandardMaterial color="snow" />
           </mesh>
@@ -232,20 +230,21 @@ export default function Experience() {
           type="fixed"
           colliders={false}
           scale={15}
-          position={[0, 8, 0]}
+          position={[0, 8, -8]}
+          rotation={[-Math.PI * 0.7, 0, 0]}
         >
           <CylinderCollider args={[0.025, 0.35]} position={[0, 0.025, 0]} />
           <PotLid />
         </RigidBody>
 
         {/* POT BODY */}
-        {/* <RigidBody type="fixed" colliders="trimesh">
+        <RigidBody type="fixed" colliders="trimesh">
           <Pot
-            scale={15}
+            scale={[15, 10, 15]}
             position={[0, -1, 0]}
             rotation={[0, Math.PI * 0.5, 0]}
           />
-        </RigidBody> */}
+        </RigidBody>
       </Physics>
     </>
   );

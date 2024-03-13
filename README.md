@@ -785,4 +785,75 @@ import { Geometry, Base, Addition } from "@react-three/csg";
 ```
 
 #### 4-8-1. Apply physics to instanced mesh
-You need to wrap `<instancedMesh>` with `<instancedMeshRigidBodies>`. `<instancedMeshRigidBodies>` will take care of creating and sending the matrices to `<instancedMesh>`, thus you can get rid of `ref={objects}` and `useEffect()`.
+You need to wrap `<instancedMesh>` with `<instancedMeshRigidBodies>`. <br>
+```
+<InstancedRigidBodies>
+    <instancedMesh castShadow args={[undefined, undefined, objectsCount]}>
+    <Geometry useGroups>
+        <Base
+        scale={0.15}
+        geometry={clear.nodes.Curve052.geometry}
+        material={clear.materials.clearMaterial}
+        />
+        <Addition
+        scale={0.15}
+        geometry={clear.nodes.Curve052_1.geometry}
+        material={clear.materials.edgeMaterial}
+        />
+    </Geometry>
+    </instancedMesh>
+</InstancedRigidBodies>
+```
+<br><br>
+
+`<instancedMeshRigidBodies>` will take care of creating and sending the matrices to `<instancedMesh>`, thus you can get rid of `ref={objects}` and `useEffect()`. <br><br>
+
+You need to create an array and put an object inside for each instance. This has to be done only once and the value has to be kept if the component rerenders. Thus, use `useMemo()`. Then after creating the array, you need to send it to `<instancedRigidBody>` as the `instance` attribute. <br>
+```
+/**
+* Object instances' count & matrices
+*/
+const objectsCount = 100;
+const instances = useMemo(() => {
+const instances = [];
+
+for (let i = 0; i < objectsCount; i++) {
+    instances.push({
+    key: "instance_" + i,
+    position: [
+        (Math.random() - 0.5) * 8,
+        6 + i * 0.2, 
+        (Math.random() - 0.5) * 8
+    ],
+    rotation: [
+        Math.random(), 
+        Math.random(), 
+        Math.random()
+    ],
+    });
+}
+
+return instances;
+}, []);
+
+....
+
+    {/* HUNDREDS OF OBJECTS */}
+    <InstancedRigidBodies instances={instances}>
+        <instancedMesh castShadow args={[undefined, undefined, objectsCount]}>
+        <Geometry useGroups>
+            <Base
+            scale={0.15}
+            geometry={clear.nodes.Curve052.geometry}
+            material={clear.materials.clearMaterial}
+            />
+            <Addition
+            scale={0.15}
+            geometry={clear.nodes.Curve052_1.geometry}
+            material={clear.materials.edgeMaterial}
+            />
+        </Geometry>
+        </instancedMesh>
+    </InstancedRigidBodies>
+```
+
