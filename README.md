@@ -706,4 +706,83 @@ const [playHitSound] = useSound(hitSound);
         <mesh ... />
     </RigidBody>
 ```
-### 4-7. Model
+### 4-8. Stress test - falling hundreds objects
+
+#### 4-8-0. Instanced mesh
+![instanced mesh](./public/images/screenshots/instance-meshes.png)
+**References** <br>
+- [three.js InstancedMesh](https://threejs.org/docs/#api/en/objects/InstancedMesh)
+- [Bruno Simons 20k challenge](https://codesandbox.io/p/sandbox/bruno-simons-20k-challenge-2qfxj4)
+- [Floating instanced shoes](https://codesandbox.io/p/sandbox/floating-instanced-shoes-h8o2d?file=%2Fsrc%2Findex.js) <br><br>
+
+In order to implement `instancedMesh`, you need to provide three arguments; `geometry`, `material` and the number of instances. <br><br>
+
+And also you need to provide a `Matrix4` for each instance and you can do through a reference with `useRef()`. For providing the matrices on the first render, you can do with `useEffect()`.<br><br>
+
+`Matrix4` is a combination of position, rotation, and scale. They are used to move the vertices according to the object transformation. When we change the `position`, `rotation` or `scale` of an object, Three.js will calculate the `Matrix4` automatically before rendering it.<br><br>
+
+There are many different methods available on `Matrix4` and one of them is `compose`, to which you need to send a position (`Vector3`), a rotation (`Quaternion`) and a scale (`Vector3`).<br><br>
+
+**compose ( position : Vector3, quaternion : Quaternion, scale : Vector3 )** <br><br>
+
+[Three.js "Matrix4" documentation link](https://threejs.org/docs/?q=matrix#api/en/math/Matrix4) <br><br>
+
+```
+import { Geometry, Base, Addition } from "@react-three/csg";
+
+....
+
+    /**
+    * Import models
+    */
+    const clear = useGLTF("/models/weather-icons/clear.glb");
+    console.log(clear);
+
+    /**
+    * Objects ref and count
+    */
+    const objects = useRef();
+    const objectsCount = 100;
+
+    /**
+    * Provide matrices for hundreds of objects
+    */
+    useEffect(() => {
+    for (let i = 0; i < objectsCount; i++) {
+        const matrix = new THREE.Matrix4();
+
+        matrix.compose(
+        new THREE.Vector3(i * 2, 0, 0),
+        new THREE.Quaternion(),
+        new THREE.Vector3(1, 1, 1)
+        );
+
+        objects.current.setMatrixAt(i, matrix);
+    }
+    }, []);
+
+    ....
+
+        {/* HUNDREDS OF OBJECTS */}
+        <instancedMesh
+            castShadow
+            ref={objects}
+            args={[undefined, undefined, objectsCount]}
+        >
+            <Geometry useGroups>
+                <Base
+                    scale={0.15}
+                    geometry={clear.nodes.Curve052.geometry}
+                    material={clear.materials.clearMaterial}
+                />
+                <Addition
+                    scale={0.15}
+                    geometry={clear.nodes.Curve052_1.geometry}
+                    material={clear.materials.edgeMaterial}
+                />
+            </Geometry>
+        </instancedMesh>
+```
+
+#### 4-8-1. Apply physics to instanced mesh
+You need to wrap `<instancedMesh>` with `<instancedMeshRigidBodies>`. `<instancedMeshRigidBodies>` will take care of creating and sending the matrices to `<instancedMesh>`, thus you can get rid of `ref={objects}` and `useEffect()`.

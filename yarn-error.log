@@ -1,0 +1,49 @@
+Arguments: 
+  C:\Program Files\nodejs\node.exe C:\Program Files (x86)\Yarn\bin\yarn.js add @react-three/csg
+
+PATH: 
+  C:\Program Files\Microsoft\jdk-11.0.16.101-hotspot\bin;C:\Program Files\nodejs\versions\;C:\Program Files\nodejs\default;C:\Program Files\nodejs;C:\Python310\Scripts\;C:\Python310\;C:\Program Files\Eclipse Foundation\jdk-8.0.302.8-hotspot\bin;C:\Program Files (x86)\Common Files\Intel\Shared Libraries\redist\intel64\compiler;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\Microsoft SQL Server\150\Tools\Binn\;C:\Program Files\dotnet\;C:\Program Files\Microsoft SQL Server\130\Tools\Binn\;C:\ProgramData\chocolatey\bin;C:\Program Files\dig\bin;C:\Program Files (x86)\Vim\vim90;C:\Program Files (x86)\Yarn\bin\;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\Git\cmd;C:\Users\toshi\AppData\Local\Programs\Python\Python311\Scripts\;C:\Users\toshi\AppData\Local\Programs\Python\Python311\;C:\Users\toshi\AppData\Local\Microsoft\WindowsApps;C:\Users\toshi\.dotnet\tools;C:\Users\toshi\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\toshi\AppData\Roaming\npm;C:\Users\toshi\AppData\Local\Yarn\bin;C:\Program Files\NVIDIA Corporation\NVIDIA NvDLISR;C:\Program Files\Git LFS;C:\Users\toshi\AppData\Local\Programs\Python\Python311\Scripts\;C:\Users\toshi\AppData\Local\Programs\Python\Python311\;C:\Users\toshi\AppData\Local\Microsoft\WindowsApps;C:\Users\toshi\.dotnet\tools;C:\Users\toshi\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\toshi\AppData\Roaming\npm;C:\Users\toshi\AppData\Local\Yarn\bin
+
+Yarn version: 
+  1.22.19
+
+Node version: 
+  19.8.1
+
+Platform: 
+  win32 x64
+
+Trace: 
+  Error: EPERM: operation not permitted, unlink 'C:\Users\toshi\Desktop\ThreeJs\create-a-game-with-r3f-re\node_modules\@esbuild\win32-x64\esbuild.exe'
+
+npm manifest: 
+  {
+    "name": "create-a-game-with-r3f-re",
+    "private": true,
+    "version": "0.0.0",
+    "type": "module",
+    "scripts": {
+      "dev": "vite",
+      "build": "vite build"
+    },
+    "devDependencies": {
+      "@vitejs/plugin-react": "4.1",
+      "vite": "^4.5.0"
+    },
+    "dependencies": {
+      "@react-three/drei": "^9.88.7",
+      "@react-three/fiber": "^8.15.8",
+      "@react-three/rapier": "1.1",
+      "r3f-perf": "^7.1.2",
+      "react": "18.2",
+      "react-dom": "18.2",
+      "three": "^0.158.0",
+      "use-sound": "^4.0.1"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile

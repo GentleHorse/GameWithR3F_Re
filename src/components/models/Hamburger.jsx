@@ -6,7 +6,7 @@ Command: npx gltfjsx@6.2.16 hamburger.glb
 import React, { useRef } from 'react'
 import { useGLTF } from '@react-three/drei'
 
-export function Hamburger(props) {
+export default function Hamburger(props) {
   const { nodes, materials } = useGLTF('/models/hamburger.glb')
   return (
     <group {...props} dispose={null}>
