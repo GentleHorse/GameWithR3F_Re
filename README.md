@@ -706,9 +706,9 @@ const [playHitSound] = useSound(hitSound);
         <mesh ... />
     </RigidBody>
 ```
-### 4-8. Stress test - falling hundreds objects
+## 5. Stress test - falling hundreds objects
 
-#### 4-8-0. Instanced mesh
+### 5-0. Instanced mesh
 ![instanced mesh](./public/images/screenshots/instance-meshes.png)
 **References** <br>
 - [three.js InstancedMesh](https://threejs.org/docs/#api/en/objects/InstancedMesh)
@@ -784,7 +784,7 @@ import { Geometry, Base, Addition } from "@react-three/csg";
         </instancedMesh>
 ```
 
-#### 4-8-1. Apply physics to instanced mesh
+### 5-1. Apply physics to instanced mesh
 You need to wrap `<instancedMesh>` with `<instancedMeshRigidBodies>`. <br>
 ```
 <InstancedRigidBodies>
