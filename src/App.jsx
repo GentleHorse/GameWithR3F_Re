@@ -1,5 +1,6 @@
 import { Canvas } from "@react-three/fiber";
 import Experience from "./Experience.jsx";
+import ExperiencePracticeBasics from './ExperiencePracticeBasics.jsx';
 
 export default function App() {
   return (
@@ -12,7 +13,8 @@ export default function App() {
         position: [2.5, 8, 15],
       }}
     >
-      <Experience />
+      {/* <Experience /> */}
+      <ExperiencePracticeBasics />
     </Canvas>
   );
 }

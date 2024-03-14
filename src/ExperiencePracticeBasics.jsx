@@ -41,7 +41,7 @@ export default function ExperiencePracticeBasics() {
   /**
    * Object instances' count & matrices
    */
-  const objectsCount = 100;
+  const objectsCount = 300;
   const instances = useMemo(() => {
     const instances = [];
 
@@ -50,7 +50,7 @@ export default function ExperiencePracticeBasics() {
         key: "instance_" + i,
         position: [
           (Math.random() - 0.5) * 8,
-          6 + i * 0.2,
+          4 + i * 0.2,
           (Math.random() - 0.5) * 8,
         ],
         rotation: [Math.random(), Math.random(), Math.random()],
@@ -212,11 +212,13 @@ export default function ExperiencePracticeBasics() {
 
         {/* POT LID */}
         <RigidBody
-          type="fixed"
+          // type="fixed"
           colliders={false}
           scale={15}
-          position={[0, 8, -8]}
-          rotation={[-Math.PI * 0.7, 0, 0]}
+          // position={[0, 8, -8]}
+          position={[0, 40, 0]}
+          rotation={[0, Math.PI * 0.5, 0]}
+          // rotation={[-Math.PI * 0.7, 0, 0]}
         >
           <CylinderCollider args={[0.025, 0.35]} position={[0, 0.025, 0]} />
           <PotLid />

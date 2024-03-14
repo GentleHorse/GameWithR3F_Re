@@ -785,6 +785,7 @@ import { Geometry, Base, Addition } from "@react-three/csg";
 ```
 
 ### 5-1. Apply physics to instanced mesh
+![hundreds of falling objects](./public/images/screenshots/stress-test-hundreds-of-falling-objects.png)
 You need to wrap `<instancedMesh>` with `<instancedMeshRigidBodies>`. <br>
 ```
 <InstancedRigidBodies>
