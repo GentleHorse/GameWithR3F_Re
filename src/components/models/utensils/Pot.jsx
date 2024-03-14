@@ -8,7 +8,7 @@ import React, { useRef } from "react";
 import { useGLTF, MeshTransmissionMaterial } from "@react-three/drei";
 
 export default function Pot(props) {
-  const { nodes, materials } = useGLTF("/models/pot.glb");
+  const { nodes, materials } = useGLTF("/models/utensil/pot.glb");
   return (
     <group {...props} dispose={null}>
 
@@ -34,4 +34,4 @@ export default function Pot(props) {
   );
 }
 
-useGLTF.preload("/models/pot.glb");
+useGLTF.preload("/models/utensil/pot.glb");

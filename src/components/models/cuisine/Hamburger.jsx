@@ -7,7 +7,7 @@ import React, { useRef } from 'react'
 import { useGLTF } from '@react-three/drei'
 
 export default function Hamburger(props) {
-  const { nodes, materials } = useGLTF('/models/hamburger.glb')
+  const { nodes, materials } = useGLTF('/models/cuisine/hamburger.glb')
   return (
     <group {...props} dispose={null}>
       <mesh geometry={nodes.bottomBun.geometry} material={materials.BunMaterial} position={[0, -2.331, 0]} />
@@ -18,4 +18,4 @@ export default function Hamburger(props) {
   )
 }
 
-useGLTF.preload('/models/hamburger.glb')
+useGLTF.preload('/models/cuisine/hamburger.glb')

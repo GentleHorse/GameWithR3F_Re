@@ -14,14 +14,13 @@ import {
 } from "@react-three/rapier";
 import useSound from "use-sound";
 import hitSound from "../public/sounds/hit.mp3";
-import gravitySwitch from "../public/sounds/gravity-switch.wav";
 import Pot from "./components/models/utensils/Pot.jsx";
 import PotLid from "./components/models/utensils/PotLid.jsx";
+import PushButton from "./components/models/buttons/Push-button.jsx";
 
 export default function Experience() {
   const sphere = useRef();
   const cube = useRef();
-  const button = useRef();
   const twister = useRef();
 
   /**
@@ -33,13 +32,11 @@ export default function Experience() {
    * Set up sounds
    */
   const [playHitSound] = useSound(hitSound);
-  const [playGravitySwitchSound] = useSound(gravitySwitch);
 
   /**
    * Import models
    */
   const clear = useGLTF("/models/weather-icons/clear.glb");
-  console.log(clear);
 
   /**
    * Object instances' count & matrices
@@ -53,14 +50,10 @@ export default function Experience() {
         key: "instance_" + i,
         position: [
           (Math.random() - 0.5) * 8,
-          6 + i * 0.2, 
-          (Math.random() - 0.5) * 8
+          6 + i * 0.2,
+          (Math.random() - 0.5) * 8,
         ],
-        rotation: [
-          Math.random(), 
-          Math.random(), 
-          Math.random()
-        ],
+        rotation: [Math.random(), Math.random(), Math.random()],
       });
     }
 
@@ -88,16 +81,11 @@ export default function Experience() {
   };
 
   /**
-   * Handler - reverse gravity
+   * Handler - wake up sleeping objects
    */
-  const handleReverseGravity = () => {
-    setReverseGravityParam(
-      (prevReveseGravityParam) => prevReveseGravityParam * -1
-    );
+  const wakeUpSleepingObjects = () => {
     sphere.current.wakeUp();
     cube.current.wakeUp();
-
-    playGravitySwitchSound();
   };
 
   /**
@@ -203,19 +191,16 @@ export default function Experience() {
           </mesh>
         </RigidBody>
 
-        {/* REVERSE GRAVITY BUTTON */}
-        <RigidBody ref={button} type="fixed">
-          <group position={[0, -1, 7]} scale={0.5}>
-            <mesh castShadow onClick={handleReverseGravity}>
-              <cylinderGeometry />
-              <meshStandardMaterial color="crimson" />
-            </mesh>
-            <mesh position-y={-0.5}>
-              <boxGeometry args={[3, 0.7, 3]} />
-              <meshStandardMaterial color="#4F4F48" />
-            </mesh>
-          </group>
-        </RigidBody>
+        {/* GRAVITY BUTTON */}
+        <PushButton
+          reveseGravityParam={reveseGravityParam}
+          onSetGravityParam={() => {
+            setReverseGravityParam(
+              (prevReveseGravityParam) => prevReveseGravityParam * -1
+            );
+          }}
+          onWakeUpObjects={wakeUpSleepingObjects}
+        />
 
         {/* FLOOR */}
         <RigidBody type="fixed" restitution={0} friction={0.7}>

@@ -8,7 +8,7 @@ import React, { useRef } from "react";
 import { useGLTF } from "@react-three/drei";
 
 export default function PotLid(props) {
-  const { nodes, materials } = useGLTF("/models/pot-lid.glb");
+  const { nodes, materials } = useGLTF("/models/utensil/pot-lid.glb");
   return (
     <group {...props} dispose={null}>
       <mesh
@@ -23,4 +23,4 @@ export default function PotLid(props) {
   );
 }
 
-useGLTF.preload("/models/pot-lid.glb");
+useGLTF.preload("/models/utensil/pot-lid.glb");
