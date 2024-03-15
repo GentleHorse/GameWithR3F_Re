@@ -13,8 +13,8 @@ export default function App() {
         position: [2.5, 8, 15],
       }}
     >
-      {/* <Experience /> */}
-      <ExperiencePracticeBasics />
+      <Experience />
+      {/* <ExperiencePracticeBasics /> */}
     </Canvas>
   );
 }
