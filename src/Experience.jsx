@@ -1,5 +1,6 @@
 import { OrbitControls } from "@react-three/drei";
 import Lights from "./components/utils/Lights.jsx";
+import Background from "./components/utils/Background.jsx";
 
 export default function Experience() {
   return (
@@ -7,6 +8,8 @@ export default function Experience() {
       <OrbitControls makeDefault />
 
       <Lights />
+
+      <Background />
 
       <mesh castShadow position-x={-2}>
         <sphereGeometry />
