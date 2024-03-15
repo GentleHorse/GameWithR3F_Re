@@ -860,7 +860,16 @@ return instances;
 
 <br><br>
 
-# Crate marble race game
+# Crate the marble race game
+
+## CMR-0. An overview sketch
+![marble race overview sketch](./public/images/screenshots/marble-race-overview-sketch-01.png) <br>
+
+## CMR-1. Links
+
+### CMR-1-0. Three.js Documentation
+- [BoxGeometry](https://threejs.org/docs/#api/en/geometries/BoxGeometry)
+- [MeshStandardMaterial](https://threejs.org/docs/#api/en/materials/MeshStandardMaterial)
 
 
 

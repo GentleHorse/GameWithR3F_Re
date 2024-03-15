@@ -3,22 +3,19 @@ import { useGLTF } from "@react-three/drei";
 import {
   CuboidCollider,
   RigidBody,
-  Physics,
-  CylinderCollider,
-  InstancedRigidBodies,
 } from "@react-three/rapier";
 import useSound from "use-sound";
 import gravitySwitchSound from "../../../../public/sounds/gravity-switch.wav";
 
 /**
  * 
- * @reveseGravityParam {int} the state of gravity (+1) or reversed gravity (-1)
- * @onSetGravityParam {Function} the setter of the gravity state
- * @onWakeUpObjects {Function} the function of waking up sleeping objects
+ * @param {*int} reveseGravityParam the state of gravity (+1) or reversed gravity (-1)
+ * @param {*function} onSetGravityParam the setter of the gravity state
+ * @param {*function} onWakeUpObjects the function of waking up sleeping objects
  * 
- * @returns <PushButton /> component 
+ * @returns <ReverseGravityPushButton /> component 
  */
-export default function PushButton({
+export default function ReverseGravityPushButton({
   reveseGravityParam,
   onSetGravityParam,
   onWakeUpObjects,

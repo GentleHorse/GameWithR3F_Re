@@ -16,7 +16,7 @@ import useSound from "use-sound";
 import hitSound from "../public/sounds/hit.mp3";
 import Pot from "./components/models/utensils/Pot.jsx";
 import PotLid from "./components/models/utensils/PotLid.jsx";
-import PushButton from "./components/models/buttons/Push-button.jsx";
+import ReverseGravityPushButton from "./components/models/reverse-gravity-push-button/ReverseGravityPushButton.jsx";
 
 export default function ExperiencePracticeBasics() {
   const sphere = useRef();
@@ -192,7 +192,7 @@ export default function ExperiencePracticeBasics() {
         </RigidBody>
 
         {/* GRAVITY BUTTON */}
-        <PushButton
+        <ReverseGravityPushButton
           reveseGravityParam={reveseGravityParam}
           onSetGravityParam={() => {
             setReverseGravityParam(
