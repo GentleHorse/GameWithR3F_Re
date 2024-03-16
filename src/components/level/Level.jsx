@@ -3,6 +3,7 @@ import * as THREE from "three";
 import { useControls } from "leva";
 import { useFrame } from "@react-three/fiber";
 import { RigidBody } from "@react-three/rapier";
+import Unicorn from "../models/animals/Unicorn";
 
 /**
  * GENERIC CUBE GEOMETRY
@@ -10,19 +11,11 @@ import { RigidBody } from "@react-three/rapier";
 const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
 
 /**
- * MATERIALS NOTES
- */
-// const floor1Material = new THREE.MeshStandardMaterial({ color: "limegreen" });
-// const floor2Material = new THREE.MeshStandardMaterial({ color: "greenyellow" });
-// const obstacleMaterial = new THREE.MeshStandardMaterial({ color: "orangered" });
-// const wallMaterial = new THREE.MeshStandardMaterial({ color: "slategrey" });
-
-/**
  * START BLOCK
  *
  * @param {*array} position the local position of the component
  *
- * @returns <BlckStart /> component
+ * @returns <BlockStart /> component
  */
 function BlockStart({ position = [0, 0, 0] }) {
   // GUI
@@ -126,7 +119,7 @@ function BlockLimbo({ position = [0, 0, 0] }) {
     obstacleColor: "orangered",
   });
 
-  // Make the limbo obstacle move vertically 
+  // Make the limbo obstacle move vertically
   useFrame((state, delta) => {
     const time = state.clock.getElapsedTime();
 
@@ -234,13 +227,42 @@ function BlockAxe({ position = [0, 0, 0] }) {
   );
 }
 
+/**
+ * END BLOCK
+ *
+ * @param {*array} position the local position of the component
+ *
+ * @returns <BlockEnd /> component
+ */
+function BlockEnd({ position = [0, 0, 0] }) {
+  // GUI
+  const { color } = useControls("end block", {
+    color: "limegreen",
+  });
+
+  return (
+    <group position={position}>
+      <mesh
+        geometry={boxGeometry}
+        material={new THREE.MeshStandardMaterial({ color: color })}
+        position={[0, 0, 0]}
+        scale={[4, 0.2, 4]}
+        receiveShadow
+      />
+
+      <Unicorn />
+    </group>
+  );
+}
+
 export default function Level() {
   return (
     <>
-      <BlockStart position={[0, 0, 12]} />
-      <BlockSpinner position={[0, 0, 8]} />
-      <BlockLimbo position={[0, 0, 4]} />
-      <BlockAxe position={[0, 0, 0]} />
+      <BlockStart position={[0, 0, 16]} />
+      <BlockSpinner position={[0, 0, 12]} />
+      <BlockLimbo position={[0, 0, 8]} />
+      <BlockAxe position={[0, 0, 4]} />
+      <BlockEnd position={[0, 0, 0]} />
     </>
   );
 }

@@ -4,11 +4,60 @@ Command: npx gltfjsx@6.2.16 unicorn.gltf --transform
 Files: unicorn.gltf [35.26KB] > C:\Users\toshi\Desktop\ThreeJs\create-a-game-with-r3f-re\unicorn-transformed.glb [21.77KB] (38%)
 */
 
+import * as THREE from "three";
 import React, { useRef } from "react";
 import { useGLTF } from "@react-three/drei";
+import { useControls } from "leva";
 
 export default function Unicorn(props) {
   const { nodes, materials } = useGLTF("/models/animals/unicorn.glb");
+
+  // GUI
+  const {
+    bodyColor,
+    bodyRoughness,
+    bodyTransmission,
+    bodyThickness,
+    edgeColor,
+    edgeMetalness,
+    edgeRoughness,
+    edgeWireframe,
+  } = useControls("unicorn", {
+    bodyColor: "crimson",
+    bodyRoughness: {
+      value: 0.15,
+      min: 0,
+      max: 1,
+      step: 0.01,
+    },
+    bodyTransmission: {
+      value: 1,
+      min: 0,
+      max: 5,
+      step: 0.01,
+    },
+    bodyThickness: {
+      value: 0.5,
+      min: 0,
+      max: 5,
+      step: 0.01,
+    },
+    edgeColor: "gold",
+    edgeMetalness: {
+      value: 0.7,
+      min: 0,
+      max: 1,
+      step: 0.01,
+    },
+    edgeRoughness: {
+      value: 0.1,
+      min: 0,
+      max: 1,
+      step: 0.01,
+    },
+    edgeWireframe: false,
+  });
+
   return (
     <group {...props} dispose={null}>
       <primitive object={nodes.Bone} />
@@ -24,12 +73,28 @@ export default function Unicorn(props) {
       >
         <skinnedMesh
           geometry={nodes.Cube.geometry}
-          material={materials["Material.001"]}
+          // material={materials["Material.001"]}
+          material={
+            new THREE.MeshPhysicalMaterial({
+              color: bodyColor,
+              roughness: bodyRoughness,
+              transmission: bodyTransmission,
+              thickness: bodyThickness,
+            })
+          }
           skeleton={nodes.Cube.skeleton}
         />
         <skinnedMesh
           geometry={nodes.Cube_1.geometry}
-          material={materials["Material.003"]}
+          // material={materials["Material.003"]}
+          material={
+            new THREE.MeshStandardMaterial({
+              color: edgeColor,
+              metalness: edgeMetalness,
+              roughness: edgeRoughness,
+              wireframe: edgeWireframe,
+            })
+          }
           skeleton={nodes.Cube_1.skeleton}
         />
       </group>
