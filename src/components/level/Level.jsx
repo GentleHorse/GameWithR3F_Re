@@ -11,6 +11,12 @@ import Unicorn from "../models/animals/Unicorn";
 const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
 
 /**
+ * Floor params
+ */
+const floorRestitution = 0.2;
+const floorFriction = 1;
+
+/**
  * START BLOCK
  *
  * @param {*array} position the local position of the component
@@ -25,13 +31,19 @@ export function BlockStart({ position = [0, 0, 0] }) {
 
   return (
     <group position={position}>
-      <mesh
-        geometry={boxGeometry}
-        material={new THREE.MeshStandardMaterial({ color: color })}
-        position={[0, -0.1, 0]}
-        scale={[4, 0.2, 4]}
-        receiveShadow
-      />
+      <RigidBody
+        type="fixed"
+        restitution={floorRestitution}
+        friction={floorFriction}
+      >
+        <mesh
+          geometry={boxGeometry}
+          material={new THREE.MeshStandardMaterial({ color: color })}
+          position={[0, -0.1, 0]}
+          scale={[4, 0.2, 4]}
+          receiveShadow
+        />
+      </RigidBody>
     </group>
   );
 }
@@ -72,13 +84,19 @@ export function BlockSpinner({ position = [0, 0, 0] }) {
   return (
     <group position={position}>
       {/* FLOOR */}
-      <mesh
-        geometry={boxGeometry}
-        material={new THREE.MeshStandardMaterial({ color: floorColor })}
-        position={[0, -0.1, 0]}
-        scale={[4, 0.2, 4]}
-        receiveShadow
-      />
+      <RigidBody
+        type="fixed"
+        restitution={floorRestitution}
+        friction={floorFriction}
+      >
+        <mesh
+          geometry={boxGeometry}
+          material={new THREE.MeshStandardMaterial({ color: floorColor })}
+          position={[0, -0.1, 0]}
+          scale={[4, 0.2, 4]}
+          receiveShadow
+        />
+      </RigidBody>
 
       {/* SPINNER */}
       <RigidBody
@@ -136,13 +154,19 @@ export function BlockLimbo({ position = [0, 0, 0] }) {
   return (
     <group position={position}>
       {/* FLOOR */}
-      <mesh
-        geometry={boxGeometry}
-        material={new THREE.MeshStandardMaterial({ color: floorColor })}
-        position={[0, -0.1, 0]}
-        scale={[4, 0.2, 4]}
-        receiveShadow
-      />
+      <RigidBody
+        type="fixed"
+        restitution={floorRestitution}
+        friction={floorFriction}
+      >
+        <mesh
+          geometry={boxGeometry}
+          material={new THREE.MeshStandardMaterial({ color: floorColor })}
+          position={[0, -0.1, 0]}
+          scale={[4, 0.2, 4]}
+          receiveShadow
+        />
+      </RigidBody>
 
       {/* LIMBO */}
       <RigidBody
@@ -200,13 +224,19 @@ export function BlockAxe({ position = [0, 0, 0] }) {
   return (
     <group position={position}>
       {/* FLOOR */}
-      <mesh
-        geometry={boxGeometry}
-        material={new THREE.MeshStandardMaterial({ color: floorColor })}
-        position={[0, -0.1, 0]}
-        scale={[4, 0.2, 4]}
-        receiveShadow
-      />
+      <RigidBody
+        type="fixed"
+        restitution={floorRestitution}
+        friction={floorFriction}
+      >
+        <mesh
+          geometry={boxGeometry}
+          material={new THREE.MeshStandardMaterial({ color: floorColor })}
+          position={[0, -0.1, 0]}
+          scale={[4, 0.2, 4]}
+          receiveShadow
+        />
+      </RigidBody>
 
       {/* AXE */}
       <RigidBody
@@ -242,13 +272,20 @@ export function BlockEnd({ position = [0, 0, 0] }) {
 
   return (
     <group position={position}>
-      <mesh
-        geometry={boxGeometry}
-        material={new THREE.MeshStandardMaterial({ color: color })}
-        position={[0, 0, 0]}
-        scale={[4, 0.2, 4]}
-        receiveShadow
-      />
+      <RigidBody
+        type="fixed"
+        restitution={floorRestitution}
+        friction={floorFriction}
+      >
+        <mesh
+          geometry={boxGeometry}
+          material={new THREE.MeshStandardMaterial({ color: color })}
+          position={[0, 0, 0]}
+          scale={[4, 0.2, 4]}
+          receiveShadow
+        />
+      </RigidBody>
+
       <RigidBody type="fixed" colliders={false}>
         <group rotation={[0, Math.PI * 0.15, 0]}>
           <CuboidCollider args={[0.4, 0.75, 1]} position={[0, 2, 0]} />
@@ -257,6 +294,51 @@ export function BlockEnd({ position = [0, 0, 0] }) {
         <Unicorn />
       </RigidBody>
     </group>
+  );
+}
+
+/**
+ * BOUNDS WALLS
+ *
+ * @param {*int} length the number of blocks including the start & end blocks
+ *
+ * @returns <Bounds /> component
+ */
+function Bounds({ length = 1 }) {
+  const { color } = useControls("bounds walls", {
+    color: "slategrey",
+  });
+
+  return (
+    <>
+      <RigidBody type="fixed" restitution={0.2} friction={0}>
+        {/* RIGHT WALL */}
+        <mesh
+          geometry={boxGeometry}
+          material={new THREE.MeshStandardMaterial({ color: color })}
+          position={[2 + 0.15, 0.75 - 0.2, -((length - 1) * 4) / 2]}
+          scale={[0.3, 1.5, length * 4]}
+          castShadow
+        />
+
+        {/* LEFT WALL */}
+        <mesh
+          geometry={boxGeometry}
+          material={new THREE.MeshStandardMaterial({ color: color })}
+          position={[-(2 + 0.15), 0.75 - 0.2, -((length - 1) * 4) / 2]}
+          scale={[0.3, 1.5, length * 4]}
+          receiveShadow
+        />
+        {/* BACK WALL */}
+        <mesh
+          geometry={boxGeometry}
+          material={new THREE.MeshStandardMaterial({ color: color })}
+          position={[0, 0.75 - 0.2, -((length - 1) * 4 + 2)]}
+          scale={[4 + 0.3 * 2, 1.5, 0.3]}
+          receiveShadow
+        />
+      </RigidBody>
+    </>
   );
 }
 
@@ -285,6 +367,8 @@ export function Level({
       ))}
 
       <BlockEnd position={[0, 0, -(count + 1) * 4]} />
+
+      <Bounds length={count + 2} />
     </>
   );
 }
