@@ -114,7 +114,7 @@ function BlockSpinner({ position = [0, 0, 0] }) {
  * @returns <BlockLimbo /> component
  */
 function BlockLimbo({ position = [0, 0, 0] }) {
-  // Ref - spinner
+  // Ref - limbo
   const obstacle = useRef();
 
   // State - limbo time offset (differentiate its start position)
@@ -126,7 +126,7 @@ function BlockLimbo({ position = [0, 0, 0] }) {
     obstacleColor: "orangered",
   });
 
-  // Rotate the spinner
+  // Make the limbo obstacle move vertically 
   useFrame((state, delta) => {
     const time = state.clock.getElapsedTime();
 
@@ -170,12 +170,77 @@ function BlockLimbo({ position = [0, 0, 0] }) {
   );
 }
 
+/**
+ * AXE TRAP BLOCK
+ *
+ * @param {*array} position the local position of the component
+ *
+ * @returns <BlockAxe /> component
+ */
+function BlockAxe({ position = [0, 0, 0] }) {
+  // Ref - axe
+  const obstacle = useRef();
+
+  // State - axe time offset (differentiate its start position)
+  const [timeOffset] = useState(() => Math.random() * Math.PI * 2);
+
+  // GUI
+  const { floorColor, obstacleColor } = useControls("axe block", {
+    floorColor: "greenyellow",
+    obstacleColor: "orangered",
+  });
+
+  // Make the axe obstacle move horizontally
+  useFrame((state, delta) => {
+    const time = state.clock.getElapsedTime();
+
+    const x = Math.sin(time + timeOffset) * 1.25;
+
+    // Relative translation, instead of absolute translation
+    obstacle.current.setNextKinematicTranslation({
+      x: position[0] + x,
+      y: position[1] + 0.8,
+      z: position[2],
+    });
+  });
+
+  return (
+    <group position={position}>
+      {/* FLOOR */}
+      <mesh
+        geometry={boxGeometry}
+        material={new THREE.MeshStandardMaterial({ color: floorColor })}
+        position={[0, -0.1, 0]}
+        scale={[4, 0.2, 4]}
+        receiveShadow
+      />
+
+      {/* AXE */}
+      <RigidBody
+        ref={obstacle}
+        type="kinematicPosition"
+        position={[0, 0.3, 0]}
+        restitution={0.2}
+        friction={0}
+      >
+        <mesh
+          geometry={boxGeometry}
+          material={new THREE.MeshStandardMaterial({ color: obstacleColor })}
+          scale={[1.5, 1.5, 0.3]}
+          castShadow
+        />
+      </RigidBody>
+    </group>
+  );
+}
+
 export default function Level() {
   return (
     <>
-      <BlockStart position={[0, 0, 8]} />
-      <BlockSpinner position={[0, 0, 4]} />
-      <BlockLimbo position={[0, 0, 0]} />
+      <BlockStart position={[0, 0, 12]} />
+      <BlockSpinner position={[0, 0, 8]} />
+      <BlockLimbo position={[0, 0, 4]} />
+      <BlockAxe position={[0, 0, 0]} />
     </>
   );
 }

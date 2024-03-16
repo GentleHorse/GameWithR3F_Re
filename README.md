@@ -976,12 +976,12 @@ function BlockSpinner({ position = [0, 0, 0] }) {
 
 In case multiple limbo blocks get populated, randomize its starting position (its speed is the same) and also take care of relative translation (`setNextKinematicTranslation`) <br><br>
 
-- **Move height**: ranged 0.15 ~ 2.15
+- **Vertical move**: `y` ranged 0.15 ~ 2.15
 - **Starting position time offset**: ranged 0 ~ Math.PI * 2 (due to `sin()` principle)<br><br>  
 
 ```
 function BlockLimbo({ position = [0, 0, 0] }) {
-  // Ref - spinner
+  // Ref - limbo
   const obstacle = useRef();
 
   // State - limbo time offset (differentiate its start position)
@@ -993,7 +993,7 @@ function BlockLimbo({ position = [0, 0, 0] }) {
     obstacleColor: "orangered",
   });
 
-  // Rotate the spinner
+  // Make the limbo obstacle move vertically 
   useFrame((state, delta) => {
     const time = state.clock.getElapsedTime();
 
@@ -1035,7 +1035,73 @@ function BlockLimbo({ position = [0, 0, 0] }) {
     </group>
   );
 }
+```
 
+### CMR-2-3. Axe trap block
+![axe block](./public/images/screenshots/axe-block.png)<br>
+
+In case multiple limbo blocks get populated, randomize its starting position (its speed is the same) and also take care of relative translation (`setNextKinematicTranslation`) <br><br>
+
+- **Horizontal move**: `x` ranged -1.25 ~ 1.25
+- **Starting position time offset**: ranged 0 ~ Math.PI * 2 (due to `sin()` principle)<br><br> 
+
+```
+function BlockAxe({ position = [0, 0, 0] }) {
+  // Ref - axe
+  const obstacle = useRef();
+
+  // State - axe time offset (differentiate its start position)
+  const [timeOffset] = useState(() => Math.random() * Math.PI * 2);
+
+  // GUI
+  const { floorColor, obstacleColor } = useControls("axe block", {
+    floorColor: "greenyellow",
+    obstacleColor: "orangered",
+  });
+
+  // Make the axe obstacle move horizontally
+  useFrame((state, delta) => {
+    const time = state.clock.getElapsedTime();
+
+    const x = Math.sin(time + timeOffset) * 1.25;
+
+    // Relative translation, instead of absolute translation
+    obstacle.current.setNextKinematicTranslation({
+      x: position[0] + x,
+      y: position[1] + 0.8,
+      z: position[2],
+    });
+  });
+
+  return (
+    <group position={position}>
+      {/* FLOOR */}
+      <mesh
+        geometry={boxGeometry}
+        material={new THREE.MeshStandardMaterial({ color: floorColor })}
+        position={[0, -0.1, 0]}
+        scale={[4, 0.2, 4]}
+        receiveShadow
+      />
+
+      {/* AXE */}
+      <RigidBody
+        ref={obstacle}
+        type="kinematicPosition"
+        position={[0, 0.3, 0]}
+        restitution={0.2}
+        friction={0}
+      >
+        <mesh
+          geometry={boxGeometry}
+          material={new THREE.MeshStandardMaterial({ color: obstacleColor })}
+          scale={[1.5, 1.5, 0.3]}
+          castShadow
+        />
+      </RigidBody>
+    </group>
+  );
+}
 ```
 
 
