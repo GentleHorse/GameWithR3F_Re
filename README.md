@@ -871,7 +871,172 @@ return instances;
 - [BoxGeometry](https://threejs.org/docs/#api/en/geometries/BoxGeometry)
 - [MeshStandardMaterial](https://threejs.org/docs/#api/en/materials/MeshStandardMaterial)
 
+## CMR-2. Levels
 
+### CMR-2-0. Start block
+![start block](./public/images/screenshots/start-block.png)<br>
+
+For better performance, create a generic cube geometry and let it shared in multiple components. As for material, activate GUI.
+
+```
+/**
+ * GENERIC CUBE GEOMETRY
+ */
+const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
+
+....
+
+function BlockStart({ position = [0, 0, 0] }) {
+  const { color } = useControls("start block", {
+    color: "limegreen",
+  });
+
+  return (
+    <group position={position}>
+      <mesh
+        geometry={boxGeometry}
+        material={new THREE.MeshStandardMaterial({ color: color })}
+        position={[0, -0.1, 0]}
+        scale={[4, 0.2, 4]}
+        receiveShadow
+      />
+    </group>
+  );
+}
+```
+
+### CMR-2-1. Spinner trap block
+![spinner block](./public/images/screenshots/spinner-block.png)<br>
+
+In case multiple spinner blocks get populated, randomize its rotating speed and direction with useState(). <br><br>
+
+- **Speed**: random param ranged 0.2 ~ 1.2
+- **Direction**: 0.5 is threshold of clockwise / counterclockwise <br><br>
+
+```
+function BlockSpinner({ position = [0, 0, 0] }) {
+  // Ref - spinner
+  const obstacle = useRef();
+
+  // State - spinner speed (randomize speed of multiple spinners)
+  const [speed] = useState(
+    () => (Math.random() + 0.2) * (Math.random() <= 0.5 ? -1 : 1)
+  );
+
+  // GUI
+  const { floorColor, obstacleColor } = useControls("spinner block", {
+    floorColor: "greenyellow",
+    obstacleColor: "orangered",
+  });
+
+  // Rotate the spinner
+  useFrame((state, delta) => {
+    const time = state.clock.getElapsedTime();
+
+    const euler = new THREE.Euler(0, time * speed, 0);
+    const quaternion = new THREE.Quaternion();
+    quaternion.setFromEuler(euler);
+
+    obstacle.current.setNextKinematicRotation(quaternion);
+  });
+
+  return (
+    <group position={position}>
+      {/* FLOOR */}
+      <mesh
+        geometry={boxGeometry}
+        material={new THREE.MeshStandardMaterial({ color: floorColor })}
+        position={[0, -0.1, 0]}
+        scale={[4, 0.2, 4]}
+        receiveShadow
+      />
+
+      {/* SPINNER */}
+      <RigidBody
+        ref={obstacle}
+        type="kinematicPosition"
+        position={[0, 0.3, 0]}
+        restitution={0.2}
+        friction={0}
+      >
+        <mesh
+          geometry={boxGeometry}
+          material={new THREE.MeshStandardMaterial({ color: obstacleColor })}
+          scale={[3.5, 0.3, 0.3]}
+          castShadow
+        />
+      </RigidBody>
+    </group>
+  );
+}
+```
+
+### CMR-2-2. Limbo trap block
+![limbo block](./public/images/screenshots/limbo-block.png)<br>
+
+In case multiple limbo blocks get populated, randomize its starting position (its speed is the same) and also take care of relative translation (`setNextKinematicTranslation`) <br><br>
+
+- **Move height**: ranged 0.15 ~ 2.15
+- **Starting position time offset**: ranged 0 ~ Math.PI * 2 (due to `sin()` principle)<br><br>  
+
+```
+function BlockLimbo({ position = [0, 0, 0] }) {
+  // Ref - spinner
+  const obstacle = useRef();
+
+  // State - limbo time offset (differentiate its start position)
+  const [timeOffset] = useState(() => Math.random() * Math.PI * 2);
+
+  // GUI
+  const { floorColor, obstacleColor } = useControls("limbo block", {
+    floorColor: "greenyellow",
+    obstacleColor: "orangered",
+  });
+
+  // Rotate the spinner
+  useFrame((state, delta) => {
+    const time = state.clock.getElapsedTime();
+
+    const y = Math.sin(time + timeOffset) + 1.15;
+
+    obstacle.current.setNextKinematicTranslation({
+      x: position[0],
+      y: position[1] + y,
+      z: position[2],
+    });
+  });
+
+  return (
+    <group position={position}>
+      {/* FLOOR */}
+      <mesh
+        geometry={boxGeometry}
+        material={new THREE.MeshStandardMaterial({ color: floorColor })}
+        position={[0, -0.1, 0]}
+        scale={[4, 0.2, 4]}
+        receiveShadow
+      />
+
+      {/* LIMBO */}
+      <RigidBody
+        ref={obstacle}
+        type="kinematicPosition"
+        position={[0, 0.3, 0]}
+        restitution={0.2}
+        friction={0}
+      >
+        <mesh
+          geometry={boxGeometry}
+          material={new THREE.MeshStandardMaterial({ color: obstacleColor })}
+          scale={[3.5, 0.3, 0.3]}
+          castShadow
+        />
+      </RigidBody>
+    </group>
+  );
+}
+
+```
 
 
 

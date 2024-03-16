@@ -120,7 +120,7 @@ export default function ExperiencePracticeBasics() {
 
       <Lights />
 
-      <Physics gravity={[0, -9.81 * reveseGravityParam, 0]} debug={false}>
+      <Physics gravity={[0, -9.81 * reveseGravityParam, 0]} debug={true}>
         {/* SPHERE */}
         <RigidBody
           ref={sphere}
@@ -200,6 +200,8 @@ export default function ExperiencePracticeBasics() {
             );
           }}
           onWakeUpObjects={wakeUpSleepingObjects}
+          position={[0, -2, 7]}
+          rotation={[0, 0, 0]}
         />
 
         {/* FLOOR */}

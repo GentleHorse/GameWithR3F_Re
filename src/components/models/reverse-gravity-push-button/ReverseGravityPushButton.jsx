@@ -1,24 +1,24 @@
 import { useRef } from "react";
 import { useGLTF } from "@react-three/drei";
-import {
-  CuboidCollider,
-  RigidBody,
-} from "@react-three/rapier";
+import { CuboidCollider, RigidBody } from "@react-three/rapier";
 import useSound from "use-sound";
 import gravitySwitchSound from "../../../../public/sounds/gravity-switch.wav";
 
 /**
- * 
+ *
  * @param {*int} reveseGravityParam the state of gravity (+1) or reversed gravity (-1)
  * @param {*function} onSetGravityParam the setter of the gravity state
  * @param {*function} onWakeUpObjects the function of waking up sleeping objects
- * 
- * @returns <ReverseGravityPushButton /> component 
+ * @param {*array} position x, y, z position of the button
+ *
+ * @returns <ReverseGravityPushButton /> component
  */
 export default function ReverseGravityPushButton({
   reveseGravityParam,
   onSetGravityParam,
   onWakeUpObjects,
+  position,
+  rotation,
 }) {
   /**
    * Refs - for RigidBody (> position control) and mesh(> color control)
@@ -44,10 +44,16 @@ export default function ReverseGravityPushButton({
     onSetGravityParam();
 
     // Change the button position (y-axis)
+    // In case the button is positioned upside down
+    // reverse the movement direction conditionally
     button.current.setNextKinematicTranslation({
-      x: 0,
-      y: -0.1 * reveseGravityParam,
-      z: 0,
+      x: position[0],
+      y:
+        position[1] +
+        -0.15 *
+          reveseGravityParam *
+          (rotation[0] >= Math.PI || rotation[2] >= Math.PI ? -1 : 1),
+      z: position[2],
     });
 
     // Change the button color
@@ -70,9 +76,9 @@ export default function ReverseGravityPushButton({
 
   return (
     <>
-      {/* REVERSE GRAVITY BUTTON - TOP */}
-      <RigidBody ref={button} type="kinematicPosition" colliders={false}>
-        <group position={[0, -2, 7]}>
+      <group position={position} rotation={rotation}>
+        {/* REVERSE GRAVITY BUTTON - TOP */}
+        <RigidBody ref={button} type="kinematicPosition" colliders={false}>
           <CuboidCollider
             args={[1, 1, 1]}
             position={[0, 1.1, 0]}
@@ -88,20 +94,20 @@ export default function ReverseGravityPushButton({
           >
             <meshStandardMaterial color="red" />
           </mesh>
-        </group>
-      </RigidBody>
+        </RigidBody>
 
-      {/* REVERSE GRAVITY BUTTON - BOTTOM */}
-      <RigidBody
-        type="fixed"
-        position={[0, -1.7, 7]}
-        rotation={[Math.PI / 2, 0, 0]}
-        scale={[1.3, 1.3, 3]}
-      >
-        <mesh receiveShadow geometry={pushButton.nodes.Cube1340_1.geometry}>
-          <meshStandardMaterial color="#4F4F48" />
-        </mesh>
-      </RigidBody>
+        {/* REVERSE GRAVITY BUTTON - BOTTOM */}
+        <RigidBody
+          type="fixed"
+          position={[0, 0.3, 0]}
+          rotation={[Math.PI / 2, 0, 0]}
+          scale={[1.3, 1.3, 3]}
+        >
+          <mesh receiveShadow geometry={pushButton.nodes.Cube1340_1.geometry}>
+            <meshStandardMaterial color="#4F4F48" />
+          </mesh>
+        </RigidBody>
+      </group>
     </>
   );
 }
