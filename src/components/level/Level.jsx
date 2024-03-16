@@ -1,8 +1,8 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
 import * as THREE from "three";
 import { useControls } from "leva";
 import { useFrame } from "@react-three/fiber";
-import { RigidBody } from "@react-three/rapier";
+import { CuboidCollider, RigidBody } from "@react-three/rapier";
 import Unicorn from "../models/animals/Unicorn";
 
 /**
@@ -17,7 +17,7 @@ const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
  *
  * @returns <BlockStart /> component
  */
-function BlockStart({ position = [0, 0, 0] }) {
+export function BlockStart({ position = [0, 0, 0] }) {
   // GUI
   const { color } = useControls("start block", {
     color: "limegreen",
@@ -43,7 +43,7 @@ function BlockStart({ position = [0, 0, 0] }) {
  *
  * @returns <BlockSpinner /> component
  */
-function BlockSpinner({ position = [0, 0, 0] }) {
+export function BlockSpinner({ position = [0, 0, 0] }) {
   // Ref - spinner
   const obstacle = useRef();
 
@@ -106,7 +106,7 @@ function BlockSpinner({ position = [0, 0, 0] }) {
  *
  * @returns <BlockLimbo /> component
  */
-function BlockLimbo({ position = [0, 0, 0] }) {
+export function BlockLimbo({ position = [0, 0, 0] }) {
   // Ref - limbo
   const obstacle = useRef();
 
@@ -170,7 +170,7 @@ function BlockLimbo({ position = [0, 0, 0] }) {
  *
  * @returns <BlockAxe /> component
  */
-function BlockAxe({ position = [0, 0, 0] }) {
+export function BlockAxe({ position = [0, 0, 0] }) {
   // Ref - axe
   const obstacle = useRef();
 
@@ -234,7 +234,7 @@ function BlockAxe({ position = [0, 0, 0] }) {
  *
  * @returns <BlockEnd /> component
  */
-function BlockEnd({ position = [0, 0, 0] }) {
+export function BlockEnd({ position = [0, 0, 0] }) {
   // GUI
   const { color } = useControls("end block", {
     color: "limegreen",
@@ -249,20 +249,42 @@ function BlockEnd({ position = [0, 0, 0] }) {
         scale={[4, 0.2, 4]}
         receiveShadow
       />
-
-      <Unicorn />
+      <RigidBody type="fixed" colliders={false}>
+        <group rotation={[0, Math.PI * 0.15, 0]}>
+          <CuboidCollider args={[0.4, 0.75, 1]} position={[0, 2, 0]} />
+          <CuboidCollider args={[0.4, 0.5, 0.4]} position={[0, 0.7, -0.5]} />
+        </group>
+        <Unicorn />
+      </RigidBody>
     </group>
   );
 }
 
-export default function Level() {
+export function Level({
+  count = 5,
+  types = [BlockSpinner, BlockAxe, BlockLimbo], // React Component Functions
+}) {
+  const blocks = useMemo(() => {
+    const blocks = [];
+
+    for (let i = 0; i < count; i++) {
+      const typeIndex = Math.floor(Math.random() * types.length);
+      const type = types[typeIndex];
+      blocks.push(type);
+    }
+
+    return blocks;
+  }, [count, types]);
+
   return (
     <>
-      <BlockStart position={[0, 0, 16]} />
-      <BlockSpinner position={[0, 0, 12]} />
-      <BlockLimbo position={[0, 0, 8]} />
-      <BlockAxe position={[0, 0, 4]} />
-      <BlockEnd position={[0, 0, 0]} />
+      <BlockStart position={[0, 0, 0]} />
+
+      {blocks.map((Block, index) => (
+        <Block key={index} position={[0, 0, -(index + 1) * 4]} />
+      ))}
+
+      <BlockEnd position={[0, 0, -(count + 1) * 4]} />
     </>
   );
 }

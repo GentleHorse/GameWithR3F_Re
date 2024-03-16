@@ -72,6 +72,7 @@ export default function Unicorn(props) {
         scale={0.489}
       >
         <skinnedMesh
+          castShadow
           geometry={nodes.Cube.geometry}
           // material={materials["Material.001"]}
           material={
@@ -85,6 +86,7 @@ export default function Unicorn(props) {
           skeleton={nodes.Cube.skeleton}
         />
         <skinnedMesh
+          castShadow
           geometry={nodes.Cube_1.geometry}
           // material={materials["Material.003"]}
           material={

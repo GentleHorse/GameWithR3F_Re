@@ -1104,8 +1104,70 @@ function BlockAxe({ position = [0, 0, 0] }) {
 }
 ```
 
-### CMR-4. End block
+### CMR-2-4. End block
+![end block](./public/images/screenshots/end-block.png)<br>
 
+Import the unicorn component.
+```
+function BlockEnd({ position = [0, 0, 0] }) {
+  // GUI
+  const { color } = useControls("end block", {
+    color: "limegreen",
+  });
 
+  return (
+    <group position={position}>
+      <mesh
+        geometry={boxGeometry}
+        material={new THREE.MeshStandardMaterial({ color: color })}
+        position={[0, 0, 0]}
+        scale={[4, 0.2, 4]}
+        receiveShadow
+      />
+      <RigidBody type="fixed" colliders={false}>
+        <group rotation={[0, Math.PI * 0.15, 0]}>
+          <CuboidCollider args={[0.4, 0.75, 1]} position={[0, 2, 0]} />
+          <CuboidCollider args={[0.4, 0.5, 0.4]} position={[0, 0.7, -0.5]} />
+        </group>
+        <Unicorn />
+      </RigidBody>
+    </group>
+  );
+}
+```
+
+### CMR-2-5. Automatically shuffle the blocks
+![suffle blocks](./public/images/screenshots/shuffle-blocks.png)<br>
+
+```
+export function Level({
+  count = 5,
+  types = [BlockSpinner, BlockAxe, BlockLimbo], // React Component Functions
+}) {
+  const blocks = useMemo(() => {
+    const blocks = [];
+
+    for (let i = 0; i < count; i++) {
+      const typeIndex = Math.floor(Math.random() * types.length);
+      const type = types[typeIndex];
+      blocks.push(type);
+    }
+
+    return blocks;
+  }, [count, types]);
+
+  return (
+    <>
+      <BlockStart position={[0, 0, 0]} />
+
+      {blocks.map((Block, index) => (
+        <Block key={index} position={[0, 0, -(index + 1) * 4]} />
+      ))}
+
+      <BlockEnd position={[0, 0, -(count + 1) * 4]} />
+    </>
+  );
+}
+```
 
 
