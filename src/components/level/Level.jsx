@@ -11,6 +11,14 @@ import Unicorn from "../models/animals/Unicorn";
 const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
 
 /**
+ * MATERIAL COLOR
+ */
+const edgeBlockFloorColor = "#4d5139";
+const trapBlockFloorColor = "#183229";
+const trapBlockObstacleColor = "#64363C";
+const wallColor = "#535953";
+
+/**
  * Floor params
  */
 const floorRestitution = 0.2;
@@ -26,7 +34,7 @@ const floorFriction = 1;
 export function BlockStart({ position = [0, 0, 0] }) {
   // GUI
   const { color } = useControls("start block", {
-    color: "limegreen",
+    color: edgeBlockFloorColor,
   });
 
   return (
@@ -66,8 +74,8 @@ export function BlockSpinner({ position = [0, 0, 0] }) {
 
   // GUI
   const { floorColor, obstacleColor } = useControls("spinner block", {
-    floorColor: "greenyellow",
-    obstacleColor: "orangered",
+    floorColor: trapBlockFloorColor,
+    obstacleColor: trapBlockObstacleColor,
   });
 
   // Rotate the spinner
@@ -133,8 +141,8 @@ export function BlockLimbo({ position = [0, 0, 0] }) {
 
   // GUI
   const { floorColor, obstacleColor } = useControls("limbo block", {
-    floorColor: "greenyellow",
-    obstacleColor: "orangered",
+    floorColor: trapBlockFloorColor,
+    obstacleColor: trapBlockObstacleColor,
   });
 
   // Make the limbo obstacle move vertically
@@ -203,8 +211,8 @@ export function BlockAxe({ position = [0, 0, 0] }) {
 
   // GUI
   const { floorColor, obstacleColor } = useControls("axe block", {
-    floorColor: "greenyellow",
-    obstacleColor: "orangered",
+    floorColor: trapBlockFloorColor,
+    obstacleColor: trapBlockObstacleColor,
   });
 
   // Make the axe obstacle move horizontally
@@ -267,7 +275,7 @@ export function BlockAxe({ position = [0, 0, 0] }) {
 export function BlockEnd({ position = [0, 0, 0] }) {
   // GUI
   const { color } = useControls("end block", {
-    color: "limegreen",
+    color: edgeBlockFloorColor,
   });
 
   return (
@@ -306,7 +314,7 @@ export function BlockEnd({ position = [0, 0, 0] }) {
  */
 function Bounds({ length = 1 }) {
   const { color } = useControls("bounds walls", {
-    color: "slategrey",
+    color: wallColor,
   });
 
   return (

@@ -1409,3 +1409,101 @@ export function BlockEnd({ .... }){
 }
 ```
 
+## CMR-3. Player
+
+### CMR-3-1. Create a player component
+![player marble ball](./public/images/screenshots/player-marble-ball.png)
+
+- [IcosahedronGeometry](https://threejs.org/docs/#api/en/geometries/IcosahedronGeometry)<br><br>
+
+For make the player marble ball realistic, add some bounciness (`restitution={0.2}`) and 100% friction (`friction={1}`). <br>
+```
+export default function MarbleBallPlayer() {
+  /**
+   * OUTER FRAME MATERIAL
+   */
+  const {
+    flatShadingOuter,
+    colorOuter,
+    metalnessOuter,
+    roughnessOuter,
+    wireframeOuter,
+  } = useControls("marble ball - outer frame", {
+    flatShadingOuter: false,
+    colorOuter: "#8d6a1a",
+    metalnessOuter: {
+      value: 0.2,
+      min: 0,
+      max: 1,
+      step: 0.01,
+    },
+    roughnessOuter: {
+      value: 0.1,
+      min: 0,
+      max: 1,
+      step: 0.01,
+    },
+    wireframeOuter: true,
+  });
+
+  /**
+   * INNER SPHERE MATERIAL
+   */
+  const {
+    flatShadingInner,
+    colorInner,
+    metalnessInner,
+    roughnessInner,
+    wireframeInner,
+  } = useControls("marble ball - inner sphere", {
+    flatShadingInner: true,
+    colorInner: "#8c2c19",
+    metalnessInner: {
+      value: 0.2,
+      min: 0,
+      max: 1,
+      step: 0.01,
+    },
+    roughnessInner: {
+      value: 0.1,
+      min: 0,
+      max: 1,
+      step: 0.01,
+    },
+    wireframeInner: false,
+  });
+
+  return (
+    <RigidBody
+      colliders="ball"
+      position={[0, 1, 0]}
+      restitution={0.2}
+      friction={1}
+    >
+      {/* OUTER FRAME */}
+      <mesh castShadow>
+        <icosahedronGeometry args={[0.3, 1]} />
+        <meshStandardMaterial
+          flatShading={flatShadingOuter}
+          color={colorOuter}
+          metalness={metalnessOuter}
+          roughness={roughnessOuter}
+          wireframe={wireframeOuter}
+        />
+      </mesh>
+
+      {/* INNER SPHERE */}
+      <mesh castShadow>
+        <icosahedronGeometry args={[0.29, 1]} />
+        <meshStandardMaterial
+          flatShading={flatShadingInner}
+          color={colorInner}
+          metalness={metalnessInner}
+          roughness={roughnessInner}
+          wireframe={wireframeInner}
+        />
+      </mesh>
+    </RigidBody>
+  );
+}
+```

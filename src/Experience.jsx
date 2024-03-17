@@ -4,6 +4,7 @@ import Lights from "./components/utils/Lights.jsx";
 import Background from "./components/utils/Background.jsx";
 import { Level } from "./components/level/Level.jsx";
 import { Perf } from "r3f-perf";
+import MarbleBallPlayer from "./components/player/MarbleBallPlayer.jsx";
 
 export default function Experience() {
   return (
@@ -16,9 +17,10 @@ export default function Experience() {
 
       <Perf position="top-left" />
 
-      <Physics debug>
+      <Physics debug={true}>
         <Lights />
         <Level />
+        <MarbleBallPlayer />
       </Physics>
     </>
   );
