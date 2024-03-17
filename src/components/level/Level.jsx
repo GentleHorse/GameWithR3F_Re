@@ -1,9 +1,13 @@
-import { useState, useRef, useMemo } from "react";
+import { useState, useRef, useMemo, useEffect } from "react";
 import * as THREE from "three";
 import { useControls } from "leva";
 import { useFrame } from "@react-three/fiber";
+import { useTexture } from "@react-three/drei";
 import { CuboidCollider, RigidBody } from "@react-three/rapier";
 import Unicorn from "../models/animals/Unicorn";
+
+import FloorRoughnessTexture from "../../../public/textures/SurfaceImperfections003_1K_var1.jpg";
+import FloorNormalTexture from "../../../public/textures/SurfaceImperfections003_1K_Normal.jpg";
 
 /**
  * GENERIC CUBE GEOMETRY
@@ -25,7 +29,7 @@ const floorRestitution = 0.2;
 const floorFriction = 1;
 
 /**
- * START BLOCK
+ * 0. START BLOCK
  *
  * @param {*array} position the local position of the component
  *
@@ -37,6 +41,12 @@ export function BlockStart({ position = [0, 0, 0] }) {
     color: edgeBlockFloorColor,
   });
 
+  // Load material roughness and normal textures
+  const [floorRoughness, floorNormal] = useTexture([
+    FloorRoughnessTexture,
+    FloorNormalTexture,
+  ]);
+
   return (
     <group position={position}>
       <RigidBody
@@ -46,7 +56,13 @@ export function BlockStart({ position = [0, 0, 0] }) {
       >
         <mesh
           geometry={boxGeometry}
-          material={new THREE.MeshStandardMaterial({ color: color })}
+          material={
+            new THREE.MeshStandardMaterial({
+              color: color,
+              roughnessMap: floorRoughness,
+              normalMap: floorNormal,
+            })
+          }
           position={[0, -0.1, 0]}
           scale={[4, 0.2, 4]}
           receiveShadow
@@ -57,13 +73,25 @@ export function BlockStart({ position = [0, 0, 0] }) {
 }
 
 /**
- * SPINNER TRAP BLOCK
+ * 1. SPINNER TRAP BLOCK
  *
  * @param {*array} position the local position of the component
  *
  * @returns <BlockSpinner /> component
  */
 export function BlockSpinner({ position = [0, 0, 0] }) {
+  // GUI
+  const { floorColor, obstacleColor } = useControls("spinner block", {
+    floorColor: trapBlockFloorColor,
+    obstacleColor: trapBlockObstacleColor,
+  });
+
+  // Load material roughness and normal textures
+  const [floorRoughness, floorNormal] = useTexture([
+    FloorRoughnessTexture,
+    FloorNormalTexture,
+  ]);
+
   // Ref - spinner
   const obstacle = useRef();
 
@@ -71,12 +99,6 @@ export function BlockSpinner({ position = [0, 0, 0] }) {
   const [speed] = useState(
     () => (Math.random() + 0.2) * (Math.random() <= 0.5 ? -1 : 1)
   );
-
-  // GUI
-  const { floorColor, obstacleColor } = useControls("spinner block", {
-    floorColor: trapBlockFloorColor,
-    obstacleColor: trapBlockObstacleColor,
-  });
 
   // Rotate the spinner
   useFrame((state, delta) => {
@@ -99,7 +121,13 @@ export function BlockSpinner({ position = [0, 0, 0] }) {
       >
         <mesh
           geometry={boxGeometry}
-          material={new THREE.MeshStandardMaterial({ color: floorColor })}
+          material={
+            new THREE.MeshStandardMaterial({
+              color: floorColor,
+              roughnessMap: floorRoughness,
+              normalMap: floorNormal,
+            })
+          }
           position={[0, -0.1, 0]}
           scale={[4, 0.2, 4]}
           receiveShadow
@@ -126,24 +154,30 @@ export function BlockSpinner({ position = [0, 0, 0] }) {
 }
 
 /**
- * LIMBO TRAP BLOCK
+ * 2. LIMBO TRAP BLOCK
  *
  * @param {*array} position the local position of the component
  *
  * @returns <BlockLimbo /> component
  */
 export function BlockLimbo({ position = [0, 0, 0] }) {
-  // Ref - limbo
-  const obstacle = useRef();
-
-  // State - limbo time offset (differentiate its start position)
-  const [timeOffset] = useState(() => Math.random() * Math.PI * 2);
-
   // GUI
   const { floorColor, obstacleColor } = useControls("limbo block", {
     floorColor: trapBlockFloorColor,
     obstacleColor: trapBlockObstacleColor,
   });
+
+  // Load material roughness and normal textures
+  const [floorRoughness, floorNormal] = useTexture([
+    FloorRoughnessTexture,
+    FloorNormalTexture,
+  ]);
+
+  // Ref - limbo
+  const obstacle = useRef();
+
+  // State - limbo time offset (differentiate its start position)
+  const [timeOffset] = useState(() => Math.random() * Math.PI * 2);
 
   // Make the limbo obstacle move vertically
   useFrame((state, delta) => {
@@ -169,7 +203,13 @@ export function BlockLimbo({ position = [0, 0, 0] }) {
       >
         <mesh
           geometry={boxGeometry}
-          material={new THREE.MeshStandardMaterial({ color: floorColor })}
+          material={
+            new THREE.MeshStandardMaterial({
+              color: floorColor,
+              roughnessMap: floorRoughness,
+              normalMap: floorNormal,
+            })
+          }
           position={[0, -0.1, 0]}
           scale={[4, 0.2, 4]}
           receiveShadow
@@ -196,24 +236,30 @@ export function BlockLimbo({ position = [0, 0, 0] }) {
 }
 
 /**
- * AXE TRAP BLOCK
+ * 3. AXE TRAP BLOCK
  *
  * @param {*array} position the local position of the component
  *
  * @returns <BlockAxe /> component
  */
 export function BlockAxe({ position = [0, 0, 0] }) {
-  // Ref - axe
-  const obstacle = useRef();
-
-  // State - axe time offset (differentiate its start position)
-  const [timeOffset] = useState(() => Math.random() * Math.PI * 2);
-
   // GUI
   const { floorColor, obstacleColor } = useControls("axe block", {
     floorColor: trapBlockFloorColor,
     obstacleColor: trapBlockObstacleColor,
   });
+
+  // Load material roughness and normal textures
+  const [floorRoughness, floorNormal] = useTexture([
+    FloorRoughnessTexture,
+    FloorNormalTexture,
+  ]);
+
+  // Ref - axe
+  const obstacle = useRef();
+
+  // State - axe time offset (differentiate its start position)
+  const [timeOffset] = useState(() => Math.random() * Math.PI * 2);
 
   // Make the axe obstacle move horizontally
   useFrame((state, delta) => {
@@ -239,7 +285,13 @@ export function BlockAxe({ position = [0, 0, 0] }) {
       >
         <mesh
           geometry={boxGeometry}
-          material={new THREE.MeshStandardMaterial({ color: floorColor })}
+          material={
+            new THREE.MeshStandardMaterial({
+              color: floorColor,
+              roughnessMap: floorRoughness,
+              normalMap: floorNormal,
+            })
+          }
           position={[0, -0.1, 0]}
           scale={[4, 0.2, 4]}
           receiveShadow
@@ -266,7 +318,7 @@ export function BlockAxe({ position = [0, 0, 0] }) {
 }
 
 /**
- * END BLOCK
+ * 4. END BLOCK
  *
  * @param {*array} position the local position of the component
  *
@@ -278,6 +330,12 @@ export function BlockEnd({ position = [0, 0, 0] }) {
     color: edgeBlockFloorColor,
   });
 
+  // Load material roughness and normal textures
+  const [floorRoughness, floorNormal] = useTexture([
+    FloorRoughnessTexture,
+    FloorNormalTexture,
+  ]);
+
   return (
     <group position={position}>
       <RigidBody
@@ -287,7 +345,13 @@ export function BlockEnd({ position = [0, 0, 0] }) {
       >
         <mesh
           geometry={boxGeometry}
-          material={new THREE.MeshStandardMaterial({ color: color })}
+          material={
+            new THREE.MeshStandardMaterial({
+              color: color,
+              roughnessMap: floorRoughness,
+              normalMap: floorNormal,
+            })
+          }
           position={[0, 0, 0]}
           scale={[4, 0.2, 4]}
           receiveShadow
@@ -313,9 +377,16 @@ export function BlockEnd({ position = [0, 0, 0] }) {
  * @returns <Bounds /> component
  */
 function Bounds({ length = 1 }) {
+  // GUI
   const { color } = useControls("bounds walls", {
     color: wallColor,
   });
+
+  // Load material roughness and normal textures
+  const [floorRoughness, floorNormal] = useTexture([
+    FloorRoughnessTexture,
+    FloorNormalTexture,
+  ]);
 
   return (
     <>
@@ -323,7 +394,13 @@ function Bounds({ length = 1 }) {
         {/* RIGHT WALL */}
         <mesh
           geometry={boxGeometry}
-          material={new THREE.MeshStandardMaterial({ color: color })}
+          material={
+            new THREE.MeshStandardMaterial({
+              color: color,
+              roughnessMap: floorRoughness,
+              normalMap: floorNormal,
+            })
+          }
           position={[2 + 0.15, 0.75 - 0.2, -((length - 1) * 4) / 2]}
           scale={[0.3, 1.5, length * 4]}
           castShadow
@@ -332,7 +409,13 @@ function Bounds({ length = 1 }) {
         {/* LEFT WALL */}
         <mesh
           geometry={boxGeometry}
-          material={new THREE.MeshStandardMaterial({ color: color })}
+          material={
+            new THREE.MeshStandardMaterial({
+              color: color,
+              roughnessMap: floorRoughness,
+              normalMap: floorNormal,
+            })
+          }
           position={[-(2 + 0.15), 0.75 - 0.2, -((length - 1) * 4) / 2]}
           scale={[0.3, 1.5, length * 4]}
           receiveShadow
@@ -340,7 +423,13 @@ function Bounds({ length = 1 }) {
         {/* BACK WALL */}
         <mesh
           geometry={boxGeometry}
-          material={new THREE.MeshStandardMaterial({ color: color })}
+          material={
+            new THREE.MeshStandardMaterial({
+              color: color,
+              roughnessMap: floorRoughness,
+              normalMap: floorNormal,
+            })
+          }
           position={[0, 0.75 - 0.2, -((length - 1) * 4 + 2)]}
           scale={[4 + 0.3 * 2, 1.5, 0.3]}
           receiveShadow
@@ -354,6 +443,7 @@ export function Level({
   count = 5,
   types = [BlockSpinner, BlockAxe, BlockLimbo], // React Component Functions
 }) {
+  // Store blocks infomation
   const blocks = useMemo(() => {
     const blocks = [];
 

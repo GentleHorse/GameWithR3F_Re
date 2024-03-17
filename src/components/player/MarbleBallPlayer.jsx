@@ -58,6 +58,7 @@ export default function MarbleBallPlayer() {
 
   return (
     <RigidBody
+      canSleep={false}
       colliders="ball"
       position={[0, 1, 0]}
       restitution={0.2}

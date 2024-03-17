@@ -1412,7 +1412,7 @@ export function BlockEnd({ .... }){
 ## CMR-3. Player
 
 ### CMR-3-1. Create a player component
-![player marble ball](./public/images/screenshots/player-marble-ball.png)
+![player marble ball](./public/images/screenshots/player-marble-ball.png)<br>
 
 - [IcosahedronGeometry](https://threejs.org/docs/#api/en/geometries/IcosahedronGeometry)<br><br>
 
@@ -1475,6 +1475,7 @@ export default function MarbleBallPlayer() {
 
   return (
     <RigidBody
+      canSleep={false}
       colliders="ball"
       position={[0, 1, 0]}
       restitution={0.2}
@@ -1507,3 +1508,6 @@ export default function MarbleBallPlayer() {
   );
 }
 ```
+
+### CMR-3-2. Controls
+- [KeyboardControls]()
