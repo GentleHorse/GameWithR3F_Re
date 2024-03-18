@@ -1510,4 +1510,147 @@ export default function MarbleBallPlayer() {
 ```
 
 ### CMR-3-2. Controls
-- [KeyboardControls]()
+#### CMR-3-2-0. pmndrs/drei documentation - `KeybordControls`
+- [KeyboardControls](https://github.com/pmndrs/drei?tab=readme-ov-file#keyboardcontrols)
+
+#### CMR-3-2-1. Objectives
+- The player to be able to use both the `W` `A` `S` `D` keys & arrow keys
+- The marble ball jumps when the `Space` bar is pressed
+
+#### CMR-3-2-2. Implement `KeybordControls`
+`<KeybordControls>` needs to wrap every component that has to be aware of which keys are being pressed. Considering later adding an interface which reacts to the keyboard outside `<Canvas>`, thus `<KeybordControls>` has to be set up at the top level (meaning above the `<Canvas>` component level). <br><br>
+
+```
+export default function App() {
+  return (
+    <>
+      <KeyboardControls map={[]}>
+        <Canvas
+          shadows
+          camera={{
+            fov: 45,
+            near: 0.1,
+            far: 200,
+            position: [2.5, 8, 15],
+          }}
+        >
+          <Experience />
+        </Canvas>
+      </KeyboardControls>
+    </>
+  );
+}
+```
+
+#### CMR-3-2-3. Set up
+In the array inside `map` attribute, you need to provide each key that you want to observe as an object with a `name` and the list of `keys` that should trigger the changes as another array. For instance, if you want both the `ArrowUp` and `KeyW` keys to make the player move `forward`, it's like `map={[{ name: "forward", keys: ["ArrowUp", "KeyW"] }]}`. Other keys setups are the same.
+```
+<KeyboardControls
+  map={[
+    { name: "forward", keys: ["ArrowUp", "KeyW"] },
+    { name: "backward", keys: ["ArrowDown", "KeyS"] },
+    { name: "leftward", keys: ["ArrowLeft", "KeyA"] },
+    { name: "rightward", keys: ["ArrowRight", "KeyD"] },
+    { name: "jump", keys: ["Space"] },
+  ]}
+>
+  <Canvas
+    shadows
+    camera={{
+      fov: 45,
+      near: 0.1,
+      far: 200,
+      position: [2.5, 8, 15],
+    }}
+  >
+    <Experience />
+  </Canvas>
+</KeyboardControls>
+```
+#### CMR-3-2-4. `w` vs `KeyW`
+For a QWERTY keyboard, `w` and `KeyW` would result in the same effect, however for non-QWERTY keyboards, it's not. `w` is pointing the **"character" of w** and `KeyW` is pointing the **"location" of w on the keyboard**. Therefore, better to use `KeyW`.
+
+#### CMR-3-2-5. Retrieve keyboard controls inside the player component
+![useKeyboardControls](./public/images/screenshots/useKeyboardControls.png)<br>
+To retrieve the keys and their states, import `useKeyboardControls` from `@react-three/drei` and this hook will return an array of two things; <br><br>
+
+- A function to subscribe to key changes (useful to know when the jump key has been pressed)
+- A function to get the current states of the keys (useful to know if the `W` `A` `S` `D` keys are being pressed) <br><br>
+
+```
+const [subscribeKeys, getKeys] = useKeyboardControls();
+
+useFrame(() => {
+  const { forward, backward, leftward, rightward, jump } = getKeys();
+
+  console.log(forward, backward, leftward, rightward, jump)
+});
+```
+
+#### CMR-3-2-6. Apply both force & roll for control
+![apply both force and roll sketch](./public/images/screenshots/marble-push-and-roll-sketch.png)<br>
+In order to make the marble ball move, you need to apply **both a roll force and push force**. In this way, the player will still have some control over the trajectory, even if the marble ball is in the air. <br><br>
+
+- To make the marble roll - `applyTorqueImpulse`
+- To make the marble push - `applyImpulse`
+
+#### CMR-3-2-7. Make it a roll!
+![make it a roll](./public/images/screenshots/make-it-a-roll.png)<br>
+
+In order to apply impulse & torque properly, you need to play with **"one"** vector value for each `applyTorqueImpulse` and `applyImpulse` methods, otherwise they are too strong.
+
+```
+const body = useRef();
+
+const [subscribeKeys, getKeys] = useKeyboardControls();
+
+useFrame((state, delta) => {
+  // Get keys' states (pressed or not pressed)
+  const { forward, backward, leftward, rightward, jump } = getKeys();
+
+  // "One" vector value for each force & roll
+  const impulse = { x: 0, y: 0, z: 0 };
+  const torque = { x: 0, y: 0, z: 0 };
+
+  // "Velocity" which is applied when the key is pressed
+  const impluseStrength = 0.6 * delta;
+  const torqueStrength = 0.2 * delta;
+
+  // Assign force & roll to keys
+  if (forward) {
+    impulse.z -= impluseStrength;
+    torque.x -= torqueStrength;
+  }
+  if (backward) {
+    impulse.z += impluseStrength;
+    torque.x += torqueStrength;
+  }
+  if (leftward) {
+    impulse.x -= impluseStrength;
+    torque.z += torqueStrength;
+  }
+  if (rightward) {
+    impulse.x += impluseStrength;
+    torque.z -= torqueStrength;
+  }
+
+  // Set force & roll vectors to RigidBody
+  body.current.applyImpulse(impulse);
+  body.current.applyTorqueImpulse(torque);
+});
+
+```
+
+#### CMR-3-2-8. Apply "damping" for realistic movements on earth environment
+The marble ball seems to be rolling almost indefinitely.... The body is rubbing against the floor, but it only takes the marble rotate and countinue on its path. So, it's better to add **"damping"** to the `<RigidBody>`. The damping will reduce the forces being applied to a body and can be set for the translation and the rotation separately. (Don't use it if the scene is in outer space or other planets!)
+
+```
+<RigidBody .... linearDamping={0.5} angularDamping={0.5}>
+  <mesh> .... </mesh>
+</RigidBody>
+```
+
+#### CMR-3-2-9. Make it jump
+
+
+
