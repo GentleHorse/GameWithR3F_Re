@@ -13,6 +13,7 @@ export default function App() {
           { name: "leftward", keys: ["ArrowLeft", "KeyA"] },
           { name: "rightward", keys: ["ArrowRight", "KeyD"] },
           { name: "jump", keys: ["Space"] },
+          { name: "activateFly", keys: ["Shift"] },
         ]}
       >
         <Canvas

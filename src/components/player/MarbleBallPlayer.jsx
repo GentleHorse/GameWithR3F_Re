@@ -1,10 +1,15 @@
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import { useFrame } from "@react-three/fiber";
 import { useKeyboardControls } from "@react-three/drei";
-import { RigidBody } from "@react-three/rapier";
+import { RigidBody, useRapier } from "@react-three/rapier";
 import { useControls } from "leva";
 
 export default function MarbleBallPlayer() {
+  /**
+   * MARBLE BALL RADIUS
+   */
+  const radius = 0.3;
+
   /**
    * OUTER FRAME MATERIAL
    */
@@ -68,13 +73,48 @@ export default function MarbleBallPlayer() {
   // Set up useKeyboardControls() hook
   const [subscribeKeys, getKeys] = useKeyboardControls();
 
-  // Here's a trick to control the ball ~~
+  // Import "rapier" & "world" property from Rapier library
+  const { rapier, world } = useRapier();
+
+  // Here's a logic to make the ball jump ~~
+  const jump = () => {
+    const origin = body.current.translation();
+    origin.y -= radius + 0.01;
+    const direction = { x: 0, y: -1, z: 0 };
+    const ray = new rapier.Ray(origin, direction);
+    const hit = world.castRay(ray, 10, true);
+
+    if (hit.toi < 0.15) {
+      {
+        body.current.applyImpulse({ x: 0, y: 1, z: 0 });
+      }
+    }
+  };
+
+  useEffect(() => {
+    subscribeKeys(
+      // Selector - which one to listen ?
+      (state) => {
+        return state.jump;
+      },
+
+      // What you want to do when the selector's state change ?
+      (value) => {
+        if (value) {
+          jump();
+        }
+      }
+    );
+  }, []);
+
+  // Here's a logic to make the ball move ~~
   // * In case the player presses two keys at the same time,
   // * play with "one" vector value instead of multiple values.
   // * ("Two" vectors are too strong!!)
   useFrame((state, delta) => {
     // Get keys' states (pressed or not pressed)
-    const { forward, backward, leftward, rightward, jump } = getKeys();
+    const { forward, backward, leftward, rightward, jump, activateFly } =
+      getKeys();
 
     // "One" vector value for each force & roll
     const impulse = { x: 0, y: 0, z: 0 };
@@ -101,6 +141,9 @@ export default function MarbleBallPlayer() {
       impulse.x += impluseStrength;
       torque.z -= torqueStrength;
     }
+    if (jump & activateFly) {
+      impulse.y += impluseStrength * 5;
+    }
 
     // Set force & roll vectors to RigidBody
     body.current.applyImpulse(impulse);
@@ -120,7 +163,7 @@ export default function MarbleBallPlayer() {
     >
       {/* OUTER FRAME */}
       <mesh castShadow>
-        <icosahedronGeometry args={[0.3, 1]} />
+        <icosahedronGeometry args={[radius, 1]} />
         <meshStandardMaterial
           flatShading={flatShadingOuter}
           color={colorOuter}
@@ -132,7 +175,7 @@ export default function MarbleBallPlayer() {
 
       {/* INNER SPHERE */}
       <mesh castShadow>
-        <icosahedronGeometry args={[0.29, 1]} />
+        <icosahedronGeometry args={[radius - 0.01, 1]} />
         <meshStandardMaterial
           flatShading={flatShadingInner}
           color={colorInner}

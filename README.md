@@ -1574,8 +1574,8 @@ For a QWERTY keyboard, `w` and `KeyW` would result in the same effect, however f
 ![useKeyboardControls](./public/images/screenshots/useKeyboardControls.png)<br>
 To retrieve the keys and their states, import `useKeyboardControls` from `@react-three/drei` and this hook will return an array of two things; <br><br>
 
-- A function to subscribe to key changes (useful to know when the jump key has been pressed)
-- A function to get the current states of the keys (useful to know if the `W` `A` `S` `D` keys are being pressed) <br><br>
+- `subscribeKeys`: A function to subscribe to key changes (useful to know when the jump key has been pressed)
+- `getKeys`:  A function to get the current states of the keys (useful to know if the `W` `A` `S` `D` keys are being pressed) <br><br>
 
 ```
 const [subscribeKeys, getKeys] = useKeyboardControls();
@@ -1651,6 +1651,75 @@ The marble ball seems to be rolling almost indefinitely.... The body is rubbing 
 ```
 
 #### CMR-3-2-9. Make it jump
+This one works a bit differently because it's not a good idea to make it jump on each frame. Jump should occurrs whenever the `jump` key state changes from **"not pressed"** to **"pressed"**. You can listen this kinds of "state changes" by subscribing with the `subscribeKeys` method. Thus, it has to be done only once with `useEffect()` hook. 
+
+```
+const jump = () => {
+  body.current.applyImpulse({x: 0, y: 0.5, z: 0});
+}
+
+useEffect(() => {
+  subscribeKeys(
+    // Selector - which one to listen ?
+    (state) => {
+      return state.jump;
+    },
+
+    // What you want to do when the selector's state change ?
+    (value) => {
+      if (value) {
+        jump();
+      }
+    }
+  );
+}, []);
+```
+
+#### CMR-3-2-10. Ray set up for the maximum jump height
+![jump height limit](./public/images/screenshots/limit-to-jump-height.png)<br>
+You can test how far the marble is from what's below by casting a ray below the marble, downwards. In order to set the origin of the ray, you need to retrieve the body position with the `translation` function and move it down by `0.31` because the marble ball radius is `0.3`( it's slightly below the floor). This can be done via Rapier instead of Three.js. <br><br>
+
+`toi` stands for `time-of-impact` and it can be seen as the distance between the ray's origin and the hit point. By default, ray behaves as if objects are hollow inside. Thus, you need to tell ray that they are **"solid"** by `world.castRay(ray, 10, true)`. `10` is the max distance for the ray.
+
+```
+import { useRapier } from "@react-three/rapier";
+
+....
+
+  const { rapier, world } = useRapier();
+
+  const jump = () => {
+    const origin = body.current.translation();
+    origin.y -= radius + 0.01;
+    const direction = { x: 0, y: -1, z: 0 };
+    const ray = new rapier.Ray(origin, direction);
+    const hit = world.castRay(ray, 10, true);
+
+    body.current.applyImpulse({ x: 0, y: 1, z: 0 });
+  };
+
+```
+
+#### CMR-3-2-11. Set limit of maximum jump height
+```
+const jump = () => {
+    const origin = body.current.translation();
+    origin.y -= radius + 0.01;
+    const direction = { x: 0, y: -1, z: 0 };
+    const ray = new rapier.Ray(origin, direction);
+    const hit = world.castRay(ray, 10, true);
+
+    if (hit.toi < 0.15) {
+      {
+        body.current.applyImpulse({ x: 0, y: 1, z: 0 });
+      }
+    }
+  };
+```
+
+
+
+
 
 
 
