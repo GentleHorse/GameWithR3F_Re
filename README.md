@@ -1807,6 +1807,57 @@ useFrame((state, delta) => {
 });
 ```
 
+## CMR-5. Shadow
+
+### CMR-5-0. The shadow stops after a few traps?
+![shadow stops](./public/images/screenshots/shadow-stops.png)<br>
+
+The shadow is being rendered by an orthographic camera positioned where the directional light is. That camera has limitations and making the shadow map bigger will reduce its quality. One way is to make light map bigger enough to cover the whole scene, but it's quite perfomance intensive and it might be limitation of its size. The trick is needed here. Thus, let the light follow the marble ball player.
+
+### CMR-5-1. Let the light follow the camera
+![shadow target remains](./public/images/screenshots/shadow-target-remains.png)<br>
+
+Call `useFrame` in the `Light` component and retrieve the `state` argument in order to access to the camera. Then set the camera position & target to light position & target. <br><br>
+
+- Chaning the light position is not enough because light target remains same (like it illuminates the same location no matter where the light moves).
+- Changing the light target is not enough to update the light target. This is because the matrix is not being updated. <br><br>
+
+**THREE JS MATRIX**
+Three.js updates object matrices when their transformation coordinates change (`position`, `rotation`, `scale`) but they need to be in the scene. In this case, the light is ini the scene but not the `target`. <br><br>
+
+```
+export default function Lights() {
+  const light = useRef();
+
+  useFrame((state) => {
+    const cameraPosition = state.camera.position;
+    
+    light.current.position.z = cameraPosition.z + 1 -4;
+    light.current.target.position.z = cameraPosition.z - 4;
+    light.current.target.updateMatrixWorld();
+  });
+
+  return (
+    <>
+      <directionalLight
+        ref={light}
+        castShadow
+        position={[4, 4, 1]}
+        intensity={4.5}
+        shadow-mapSize={[1024, 1024]}
+        shadow-camera-near={1}
+        shadow-camera-far={10}
+        shadow-camera-top={10}
+        shadow-camera-right={10}
+        shadow-camera-bottom={-10}
+        shadow-camera-left={-10}
+      />
+      <ambientLight intensity={1.5} />
+    </>
+  );
+}
+```
+
 
 
 
