@@ -1,4 +1,5 @@
-import { useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
+import * as THREE from 'three';
 import { useFrame } from "@react-three/fiber";
 import { useKeyboardControls } from "@react-three/drei";
 import { RigidBody, useRapier } from "@react-three/rapier";
@@ -11,7 +12,7 @@ export default function MarbleBallPlayer() {
   const radius = 0.3;
 
   /**
-   * OUTER FRAME MATERIAL
+   * GUI - OUTER FRAME MATERIAL
    */
   const {
     flatShadingOuter,
@@ -38,7 +39,7 @@ export default function MarbleBallPlayer() {
   });
 
   /**
-   * INNER SPHERE MATERIAL
+   * GUI - INNER SPHERE MATERIAL
    */
   const {
     flatShadingInner,
@@ -76,7 +77,7 @@ export default function MarbleBallPlayer() {
   // Import "rapier" & "world" property from Rapier library
   const { rapier, world } = useRapier();
 
-  // Here's a logic to make the ball jump ~~
+  // ~~ Here's a logic to make the ball jump ~~
   const jump = () => {
     const origin = body.current.translation();
     origin.y -= radius + 0.01;
@@ -106,10 +107,10 @@ export default function MarbleBallPlayer() {
 
     return () => {
       unsubscribeJump();
-    }
+    };
   }, []);
 
-  // Here's a logic to make the ball move ~~
+  // ~~ Here's a logic to make the ball move ~~
   // * In case the player presses two keys at the same time,
   // * play with "one" vector value instead of multiple values.
   // * ("Two" vectors are too strong!!)
@@ -150,6 +151,36 @@ export default function MarbleBallPlayer() {
     // Set force & roll vectors to RigidBody
     body.current.applyImpulse(impulse);
     body.current.applyTorqueImpulse(torque);
+  });
+
+  /**
+   * CAMERA ANIMATION
+   */
+  const [smoothedCameraPosition ] = useState(() => new THREE.Vector3(20, 20, 20));
+  const [smoothedCameraTarget ] = useState(() => new THREE.Vector3());
+
+  useFrame((state, delta) => {
+    // Get the marble ball position
+    const bodyPosition = body.current.translation();
+
+    // Camera position
+    const cameraPosition = new THREE.Vector3();
+    cameraPosition.copy(bodyPosition);
+    cameraPosition.z += 2.25;
+    cameraPosition.y += 0.65;
+
+    // Camera target
+    const cameraTarget = new THREE.Vector3()
+    cameraTarget.copy(bodyPosition);
+    cameraTarget.y += 0.25;
+
+    // Lerp position & target
+    smoothedCameraPosition.lerp(cameraPosition, 5 * delta);
+    smoothedCameraTarget.lerp(cameraTarget, 5 * delta)
+
+    // Set smoothed position & target
+    state.camera.position.copy(smoothedCameraPosition);
+    state.camera.lookAt(smoothedCameraTarget);
   });
 
   return (

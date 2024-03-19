@@ -952,7 +952,7 @@ return instances;
 
 <br><br>
 
-# Crate the marble race game
+# Create the marble race game
 
 ## CMR-0. An overview sketch
 
@@ -1651,7 +1651,9 @@ The marble ball seems to be rolling almost indefinitely.... The body is rubbing 
 ```
 
 #### CMR-3-2-9. Make it jump
-This one works a bit differently because it's not a good idea to make it jump on each frame. Jump should occurrs whenever the `jump` key state changes from **"not pressed"** to **"pressed"**. You can listen this kinds of "state changes" by subscribing with the `subscribeKeys` method. Thus, it has to be done only once with `useEffect()` hook. 
+![make it jump](./public/images/screenshots/make-it-jump.png)<br>
+
+This one works a bit differently because it's not a good idea to make it jump on each frame. Jump should occurrs whenever the `jump` key state changes from **"not pressed"** to **"pressed"**. You can listen this kinds of "state changes" by subscribing with the `subscribeKeys` method. Thus, it has to be done only once with `useEffect` hook. 
 
 ```
 const jump = () => {
@@ -1719,7 +1721,7 @@ const jump = () => {
 #### CMR-3-2-12. Fix the small bug
 If you apply some changes to the `MarbleBallPlayer` component, it will be destroyed and recreated, but the function you sent to `subscribeKeys` will be called twice and it will make the marble ball jump twice as hight. <br><br>
 
-First, you need to retrieve the function to unsubscribe and it's what `subscribeKeys` returns. You call the function in the **"clean up"** phase of `useEffect()` hook. 
+First, you need to retrieve the function to unsubscribe and it's what `subscribeKeys` returns. You call the function in the **"clean up"** phase of `useEffect` hook. 
 
 ```
 useEffect(() => {
@@ -1742,8 +1744,68 @@ useEffect(() => {
   }, []);
 ```
 
+## CMR-4. Camera animation
 
+### CMR-4-0. Objectives
+- The camera to follow the marble ball
+- The camera need to stay behind the ball, but with a smooth animation
 
+### CMR-4-1. Set the camera with classic three.js logic
+```
+useFrame((state, delta) => {
+  // Get the marble ball position
+  const bodyPosition = body.current.translation();
+
+  // Camera position
+  const cameraPosition = new THREE.Vector3();
+  cameraPosition.copy(bodyPosition);
+  cameraPosition.z += 2.25;
+  cameraPosition.y += 0.65;
+
+  // Camera target
+  const cameraTarget = new THREE.Vector3()
+  cameraTarget.copy(bodyPosition);
+  cameraTarget.y += 0.25;
+
+  // Set position & target
+  state.camera.position.copy(cameraPosition);
+  state.camera.lookAt(cameraTarget);
+});
+```
+
+### CMR-4-2. Make the camera animation more smooth
+For smooth camera animation, use classic "lerping" techniques. On each frame, the camera will get slightly closer to where it's supposed to be and it'll keep doing that.<br><br>
+
+First, you need to create two `Vector3` **outside of** the `useFrame` because they'll contain the position and target of the camera through time. You can use `useState`. And then, you can "lerp" these values and copy to camera.
+
+```
+const [smoothedCameraPosition ] = useState(() => new THREE.Vector3(20, 20, 20));
+const [smoothedCameraTarget ] = useState(() => new THREE.Vector3());
+
+useFrame((state, delta) => {
+  // Get the marble ball position
+  const bodyPosition = body.current.translation();
+
+  // Camera position
+  const cameraPosition = new THREE.Vector3();
+  cameraPosition.copy(bodyPosition);
+  cameraPosition.z += 2.25;
+  cameraPosition.y += 0.65;
+
+  // Camera target
+  const cameraTarget = new THREE.Vector3()
+  cameraTarget.copy(bodyPosition);
+  cameraTarget.y += 0.25;
+
+  // Lerp position & target
+  smoothedCameraPosition.lerp(cameraPosition, 5 * delta);
+  smoothedCameraTarget.lerp(cameraTarget, 5 * delta)
+
+  // Set smoothed position & target
+  state.camera.position.copy(smoothedCameraPosition);
+  state.camera.lookAt(smoothedCameraTarget);
+});
+```
 
 
 
