@@ -17,7 +17,7 @@ export default function Experience() {
 
       <Perf position="top-left" />
 
-      <Physics debug={true}>
+      <Physics debug={false}>
         <Lights />
         <Level />
         <MarbleBallPlayer />

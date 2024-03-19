@@ -1574,8 +1574,8 @@ For a QWERTY keyboard, `w` and `KeyW` would result in the same effect, however f
 ![useKeyboardControls](./public/images/screenshots/useKeyboardControls.png)<br>
 To retrieve the keys and their states, import `useKeyboardControls` from `@react-three/drei` and this hook will return an array of two things; <br><br>
 
-- `subscribeKeys`: A function to subscribe to key changes (useful to know when the jump key has been pressed)
-- `getKeys`:  A function to get the current states of the keys (useful to know if the `W` `A` `S` `D` keys are being pressed) <br><br>
+- `subscribeKeys`: A function to subscribe to **key changes** (useful to know when the jump key has been pressed)
+- `getKeys`:  A function to get **the current states** of the keys (useful to know if the `W` `A` `S` `D` keys are being pressed) <br><br>
 
 ```
 const [subscribeKeys, getKeys] = useKeyboardControls();
@@ -1709,13 +1709,39 @@ const jump = () => {
     const ray = new rapier.Ray(origin, direction);
     const hit = world.castRay(ray, 10, true);
 
+    // Jump is allowed only if the ball is close enough to the floor
     if (hit.toi < 0.15) {
-      {
-        body.current.applyImpulse({ x: 0, y: 1, z: 0 });
-      }
+      body.current.applyImpulse({ x: 0, y: 1, z: 0 });
     }
   };
 ```
+
+#### CMR-3-2-12. Fix the small bug
+If you apply some changes to the `MarbleBallPlayer` component, it will be destroyed and recreated, but the function you sent to `subscribeKeys` will be called twice and it will make the marble ball jump twice as hight. <br><br>
+
+First, you need to retrieve the function to unsubscribe and it's what `subscribeKeys` returns. You call the function in the **"clean up"** phase of `useEffect()` hook. 
+
+```
+useEffect(() => {
+
+    // Step 1. Define the function instead of call it
+    const unsubscribeJump = subscribeKeys(
+      (state) => state.jump,
+
+      (value) => {
+        if (value) {
+          jump();
+        }
+      }
+    );
+
+    // Step 2. Call the function
+    return () => {
+      unsubscribeJump();
+    }
+  }, []);
+```
+
 
 
 

@@ -84,19 +84,17 @@ export default function MarbleBallPlayer() {
     const ray = new rapier.Ray(origin, direction);
     const hit = world.castRay(ray, 10, true);
 
+    // Jump is allowed only if the ball is close enough to the floor
     if (hit.toi < 0.15) {
-      {
-        body.current.applyImpulse({ x: 0, y: 1, z: 0 });
-      }
+      body.current.applyImpulse({ x: 0, y: 1, z: 0 });
     }
   };
 
+  // For listening to state changes
   useEffect(() => {
-    subscribeKeys(
+    const unsubscribeJump = subscribeKeys(
       // Selector - which one to listen ?
-      (state) => {
-        return state.jump;
-      },
+      (state) => state.jump,
 
       // What you want to do when the selector's state change ?
       (value) => {
@@ -105,6 +103,10 @@ export default function MarbleBallPlayer() {
         }
       }
     );
+
+    return () => {
+      unsubscribeJump();
+    }
   }, []);
 
   // Here's a logic to make the ball move ~~
