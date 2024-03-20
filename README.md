@@ -1907,8 +1907,14 @@ export default function App() {
 }
 ```
 
-### CMR-6-1. Time
+### CMR-6-1. Add "time", "restart" and "keyboard input" placeholders
+![interface setup](./public/images/screenshots/interface-setup.png)<br>
 
+- **TIME:** display a stopwatch so that the player knows how long it takes to finish the level
+- **RESTART:** let the player restart the game
+- **KEYBOARD INPUT:** display which key is pressed by the player
+
+### CMR-6-2. Keyboard input logic
 
 
 
