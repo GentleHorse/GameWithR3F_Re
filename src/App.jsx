@@ -2,6 +2,7 @@ import { Canvas } from "@react-three/fiber";
 import { KeyboardControls } from "@react-three/drei";
 import Experience from "./Experience.jsx";
 import ExperiencePracticeBasics from "./ExperiencePracticeBasics.jsx";
+import Interface from "./components/interface/Interface.jsx";
 
 export default function App() {
   return (
@@ -28,6 +29,7 @@ export default function App() {
           <Experience />
           {/* <ExperiencePracticeBasics /> */}
         </Canvas>
+        <Interface />
       </KeyboardControls>
     </>
   );

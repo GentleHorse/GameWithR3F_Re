@@ -1814,7 +1814,7 @@ useFrame((state, delta) => {
 
 The shadow is being rendered by an orthographic camera positioned where the directional light is. That camera has limitations and making the shadow map bigger will reduce its quality. One way is to make light map bigger enough to cover the whole scene, but it's quite perfomance intensive and it might be limitation of its size. The trick is needed here. Thus, let the light follow the marble ball player.
 
-### CMR-5-1. Let the light follow the camera
+### CMR-5-1. Why light "target" needs to be updated?
 ![shadow target remains](./public/images/screenshots/shadow-target-remains.png)<br>
 
 Call `useFrame` in the `Light` component and retrieve the `state` argument in order to access to the camera. Then set the camera position & target to light position & target. <br><br>
@@ -1822,8 +1822,11 @@ Call `useFrame` in the `Light` component and retrieve the `state` argument in or
 - Chaning the light position is not enough because light target remains same (like it illuminates the same location no matter where the light moves).
 - Changing the light target is not enough to update the light target. This is because the matrix is not being updated. <br><br>
 
-**THREE JS MATRIX**
-Three.js updates object matrices when their transformation coordinates change (`position`, `rotation`, `scale`) but they need to be in the scene. In this case, the light is ini the scene but not the `target`. <br><br>
+### CMR-5-2. Let the light follow the camera
+![let the light follow camera](./public/images/screenshots/let-the-light-follow-camera.png)<br>
+
+**THREE JS MATRIX** <br>
+Three.js updates object matrices when their transformation coordinates change (`position`, `rotation`, `scale`) but they need to be in the scene. In this case, the light is in the scene but not the `target`. Thus, you need to update the matrix of the `target` manually with the `updateMatrixWorld` method. <br><br>
 
 ```
 export default function Lights() {
@@ -1857,6 +1860,55 @@ export default function Lights() {
   );
 }
 ```
+
+## CMR-6. Interface
+The interface is composed of three elements;<br><br>
+
+- A timer
+- A restart button
+- A keyboard interface showing the `W` `A` `S` `D` keys and `Space` bar
+
+### CMR-6-0. The component
+The interface is inside HTML on top of the `<canvas>`. Using HTML for the interface is very straightforward and React makes it even easier to have the displayed information adapt to the data. <br><br>
+
+Instantiate `<Interface>` after  `<Canvas>` **INSIDE** `<KeyboardControls>` so that you have access to the keys from the `Interface`  component.
+
+```
+export default function App() {
+  return (
+    <>
+      <KeyboardControls
+        map={[
+          { name: "forward", keys: ["ArrowUp", "KeyW"] },
+          { name: "backward", keys: ["ArrowDown", "KeyS"] },
+          { name: "leftward", keys: ["ArrowLeft", "KeyA"] },
+          { name: "rightward", keys: ["ArrowRight", "KeyD"] },
+          { name: "jump", keys: ["Space"] },
+          { name: "activateFly", keys: ["Shift"] },
+        ]}
+      >
+        <Canvas
+          shadows
+          camera={{
+            fov: 45,
+            near: 0.1,
+            far: 200,
+            position: [2.5, 5, 7],
+          }}
+        >
+          <Experience />
+        </Canvas>
+
+        <Interface />
+
+      </KeyboardControls>
+    </>
+  );
+}
+```
+
+### CMR-6-1. Time
+
 
 
 
