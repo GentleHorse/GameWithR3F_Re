@@ -1967,6 +1967,7 @@ const jump = useKeyboardControls((state) => state.jump);
 ```
 
 ### CMR-6-4. Add `active` class to reflect key press state
+![keyboard input interface](./public/images/screenshots/keyboard-input-interface.png)<br>
 
 ```
 export default function Interface() {
