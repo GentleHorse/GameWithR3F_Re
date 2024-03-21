@@ -1237,6 +1237,7 @@ function BlockEnd({ position = [0, 0, 0] }) {
 ```
 
 ### CMR-2-5. Automatically shuffle the blocks
+
 ![suffle blocks](./public/images/screenshots/shuffle-blocks.png)<br>
 
 ```
@@ -1271,7 +1272,9 @@ export function Level({
 ```
 
 ### CMR-2-6. Bounds
+
 ![bounds walls](./public/images/screenshots/bounds-walls.png)<br>
+
 ```
 function Bounds({ length = 1 }) {
   const { color } = useControls("bounds walls", {
@@ -1311,7 +1314,9 @@ function Bounds({ length = 1 }) {
   );
 }
 ```
+
 ### CMR-2-7. Set floor restitution and friction
+
 Set `friction` of `<RigidBody>` of floors to `1` otherwise a ball won't move when it rotates. <br>
 
 ```
@@ -1412,11 +1417,13 @@ export function BlockEnd({ .... }){
 ## CMR-3. Player
 
 ### CMR-3-1. Create a player component
+
 ![player marble ball](./public/images/screenshots/player-marble-ball.png)<br>
 
 - [IcosahedronGeometry](https://threejs.org/docs/#api/en/geometries/IcosahedronGeometry)<br><br>
 
 For make the player marble ball realistic, add some bounciness (`restitution={0.2}`) and 100% friction (`friction={1}`). <br>
+
 ```
 export default function MarbleBallPlayer() {
   /**
@@ -1510,14 +1517,18 @@ export default function MarbleBallPlayer() {
 ```
 
 ### CMR-3-2. Controls
+
 #### CMR-3-2-0. pmndrs/drei documentation - `KeybordControls`
+
 - [KeyboardControls](https://github.com/pmndrs/drei?tab=readme-ov-file#keyboardcontrols)
 
 #### CMR-3-2-1. Objectives
+
 - The player to be able to use both the `W` `A` `S` `D` keys & arrow keys
 - The marble ball jumps when the `Space` bar is pressed
 
 #### CMR-3-2-2. Implement `KeybordControls`
+
 `<KeybordControls>` needs to wrap every component that has to be aware of which keys are being pressed. Considering later adding an interface which reacts to the keyboard outside `<Canvas>`, thus `<KeybordControls>` has to be set up at the top level (meaning above the `<Canvas>` component level). <br><br>
 
 ```
@@ -1543,7 +1554,9 @@ export default function App() {
 ```
 
 #### CMR-3-2-3. Set up
+
 In the array inside `map` attribute, you need to provide each key that you want to observe as an object with a `name` and the list of `keys` that should trigger the changes as another array. For instance, if you want both the `ArrowUp` and `KeyW` keys to make the player move `forward`, it's like `map={[{ name: "forward", keys: ["ArrowUp", "KeyW"] }]}`. Other keys setups are the same.
+
 ```
 <KeyboardControls
   map={[
@@ -1567,15 +1580,18 @@ In the array inside `map` attribute, you need to provide each key that you want 
   </Canvas>
 </KeyboardControls>
 ```
+
 #### CMR-3-2-4. `w` vs `KeyW`
+
 For a QWERTY keyboard, `w` and `KeyW` would result in the same effect, however for non-QWERTY keyboards, it's not. `w` is pointing the **"character" of w** and `KeyW` is pointing the **"location" of w on the keyboard**. Therefore, better to use `KeyW`.
 
 #### CMR-3-2-5. Retrieve keyboard controls inside the player component
+
 ![useKeyboardControls](./public/images/screenshots/useKeyboardControls.png)<br>
 To retrieve the keys and their states, import `useKeyboardControls` from `@react-three/drei` and this hook will return an array of two things; <br><br>
 
 - `subscribeKeys`: A function to subscribe to **key changes** (useful to know when the jump key has been pressed)
-- `getKeys`:  A function to get **the current states** of the keys (useful to know if the `W` `A` `S` `D` keys are being pressed) <br><br>
+- `getKeys`: A function to get **the current states** of the keys (useful to know if the `W` `A` `S` `D` keys are being pressed) <br><br>
 
 ```
 const [subscribeKeys, getKeys] = useKeyboardControls();
@@ -1588,6 +1604,7 @@ useFrame(() => {
 ```
 
 #### CMR-3-2-6. Apply both force & roll for control
+
 ![apply both force and roll sketch](./public/images/screenshots/marble-push-and-roll-sketch.png)<br>
 In order to make the marble ball move, you need to apply **both a roll force and push force**. In this way, the player will still have some control over the trajectory, even if the marble ball is in the air. <br><br>
 
@@ -1595,6 +1612,7 @@ In order to make the marble ball move, you need to apply **both a roll force and
 - To make the marble push - `applyImpulse`
 
 #### CMR-3-2-7. Make it a roll!
+
 ![make it a roll](./public/images/screenshots/make-it-a-roll.png)<br>
 
 In order to apply impulse & torque properly, you need to play with **"one"** vector value for each `applyTorqueImpulse` and `applyImpulse` methods, otherwise they are too strong.
@@ -1642,6 +1660,7 @@ useFrame((state, delta) => {
 ```
 
 #### CMR-3-2-8. Apply "damping" for realistic movements on earth environment
+
 The marble ball seems to be rolling almost indefinitely.... The body is rubbing against the floor, but it only takes the marble rotate and countinue on its path. So, it's better to add **"damping"** to the `<RigidBody>`. The damping will reduce the forces being applied to a body and can be set for the translation and the rotation separately. (Don't use it if the scene is in outer space or other planets!)
 
 ```
@@ -1651,9 +1670,10 @@ The marble ball seems to be rolling almost indefinitely.... The body is rubbing 
 ```
 
 #### CMR-3-2-9. Make it jump
+
 ![make it jump](./public/images/screenshots/make-it-jump.png)<br>
 
-This one works a bit differently because it's not a good idea to make it jump on each frame. Jump should occurrs whenever the `jump` key state changes from **"not pressed"** to **"pressed"**. You can listen this kinds of "state changes" by subscribing with the `subscribeKeys` method. Thus, it has to be done only once with `useEffect` hook. 
+This one works a bit differently because it's not a good idea to make it jump on each frame. Jump should occurrs whenever the `jump` key state changes from **"not pressed"** to **"pressed"**. You can listen this kinds of "state changes" by subscribing with the `subscribeKeys` method. Thus, it has to be done only once with `useEffect` hook.
 
 ```
 const jump = () => {
@@ -1678,6 +1698,7 @@ useEffect(() => {
 ```
 
 #### CMR-3-2-10. Ray set up for the maximum jump height
+
 ![jump height limit](./public/images/screenshots/limit-to-jump-height.png)<br>
 You can test how far the marble is from what's below by casting a ray below the marble, downwards. In order to set the origin of the ray, you need to retrieve the body position with the `translation` function and move it down by `0.31` because the marble ball radius is `0.3`( it's slightly below the floor). This can be done via Rapier instead of Three.js. <br><br>
 
@@ -1703,6 +1724,7 @@ import { useRapier } from "@react-three/rapier";
 ```
 
 #### CMR-3-2-11. Set limit of maximum jump height
+
 ```
 const jump = () => {
     const origin = body.current.translation();
@@ -1719,9 +1741,10 @@ const jump = () => {
 ```
 
 #### CMR-3-2-12. Fix the small bug
+
 If you apply some changes to the `MarbleBallPlayer` component, it will be destroyed and recreated, but the function you sent to `subscribeKeys` will be called twice and it will make the marble ball jump twice as hight. <br><br>
 
-First, you need to retrieve the function to unsubscribe and it's what `subscribeKeys` returns. You call the function in the **"clean up"** phase of `useEffect` hook. 
+First, you need to retrieve the function to unsubscribe and it's what `subscribeKeys` returns. You call the function in the **"clean up"** phase of `useEffect` hook.
 
 ```
 useEffect(() => {
@@ -1747,10 +1770,12 @@ useEffect(() => {
 ## CMR-4. Camera animation
 
 ### CMR-4-0. Objectives
+
 - The camera to follow the marble ball
 - The camera need to stay behind the ball, but with a smooth animation
 
 ### CMR-4-1. Set the camera with classic three.js logic
+
 ```
 useFrame((state, delta) => {
   // Get the marble ball position
@@ -1774,6 +1799,7 @@ useFrame((state, delta) => {
 ```
 
 ### CMR-4-2. Make the camera animation more smooth
+
 For smooth camera animation, use classic "lerping" techniques. On each frame, the camera will get slightly closer to where it's supposed to be and it'll keep doing that.<br><br>
 
 First, you need to create two `Vector3` **outside of** the `useFrame` because they'll contain the position and target of the camera through time. You can use `useState`. And then, you can "lerp" these values and copy to camera.
@@ -1810,11 +1836,13 @@ useFrame((state, delta) => {
 ## CMR-5. Shadow
 
 ### CMR-5-0. The shadow stops after a few traps?
+
 ![shadow stops](./public/images/screenshots/shadow-stops.png)<br>
 
 The shadow is being rendered by an orthographic camera positioned where the directional light is. That camera has limitations and making the shadow map bigger will reduce its quality. One way is to make light map bigger enough to cover the whole scene, but it's quite perfomance intensive and it might be limitation of its size. The trick is needed here. Thus, let the light follow the marble ball player.
 
 ### CMR-5-1. Why light "target" needs to be updated?
+
 ![shadow target remains](./public/images/screenshots/shadow-target-remains.png)<br>
 
 Call `useFrame` in the `Light` component and retrieve the `state` argument in order to access to the camera. Then set the camera position & target to light position & target. <br><br>
@@ -1823,6 +1851,7 @@ Call `useFrame` in the `Light` component and retrieve the `state` argument in or
 - Changing the light target is not enough to update the light target. This is because the matrix is not being updated. <br><br>
 
 ### CMR-5-2. Let the light follow the camera
+
 ![let the light follow camera](./public/images/screenshots/let-the-light-follow-camera.png)<br>
 
 **THREE JS MATRIX** <br>
@@ -1834,7 +1863,7 @@ export default function Lights() {
 
   useFrame((state) => {
     const cameraPosition = state.camera.position;
-    
+
     light.current.position.z = cameraPosition.z + 1 -4;
     light.current.target.position.z = cameraPosition.z - 4;
     light.current.target.updateMatrixWorld();
@@ -1862,6 +1891,7 @@ export default function Lights() {
 ```
 
 ## CMR-6. Interface
+
 The interface is composed of three elements;<br><br>
 
 - A timer
@@ -1869,9 +1899,10 @@ The interface is composed of three elements;<br><br>
 - A keyboard interface showing the `W` `A` `S` `D` keys and `Space` bar
 
 ### CMR-6-0. The component
+
 The interface is inside HTML on top of the `<canvas>`. Using HTML for the interface is very straightforward and React makes it even easier to have the displayed information adapt to the data. <br><br>
 
-Instantiate `<Interface>` after  `<Canvas>` **INSIDE** `<KeyboardControls>` so that you have access to the keys from the `Interface`  component.
+Instantiate `<Interface>` after `<Canvas>` **INSIDE** `<KeyboardControls>` so that you have access to the keys from the `Interface` component.
 
 ```
 export default function App() {
@@ -1908,6 +1939,7 @@ export default function App() {
 ```
 
 ### CMR-6-1. Add "time", "restart" and "keyboard input" placeholders
+
 ![interface setup](./public/images/screenshots/interface-setup.png)<br>
 
 - **TIME:** display a stopwatch so that the player knows how long it takes to finish the level
@@ -1916,7 +1948,57 @@ export default function App() {
 
 ### CMR-6-2. Keyboard input logic
 
+In order to reflect the player's real-time keyboard input to the interface, reactive data needs to be retrieved. This can be done by retrieving **state** through `useKeyboardControls`. In the below example, `controls` is an object containing all inputs as properties where each property is `true` or `false`, depending on whether or not the key is pressed. The parameter you sent is a function receiving the state as a parameter and you are returning that state. This can be called **"a selector"**.
 
+```
+const controls = useKeyboardControls((state) => state)
+```
 
+### CMR-6-3. Import keyboard states separately
 
+It's preferable to only select the data that you truly need in order to avoid unnecessary rerendering. This can be done by defining a specific selector for each key.
 
+```
+const forward = useKeyboardControls((state) => state.forward);
+const backward = useKeyboardControls((state) => state.backward);
+const leftward = useKeyboardControls((state) => state.leftward);
+const rightward = useKeyboardControls((state) => state.rightward);
+const jump = useKeyboardControls((state) => state.jump);
+```
+
+### CMR-6-4. Add `active` class to reflect key press state
+
+```
+export default function Interface() {
+  const forward = useKeyboardControls((state) => state.forward);
+  const backward = useKeyboardControls((state) => state.backward);
+  const leftward = useKeyboardControls((state) => state.leftward);
+  const rightward = useKeyboardControls((state) => state.rightward);
+  const jump = useKeyboardControls((state) => state.jump);
+
+  return (
+    <div className="interface">
+      {/* TIME */}
+      <div className="time">0.00</div>
+
+      {/* RESTART */}
+      <div className="restart">Restart</div>
+
+      {/* CONTROLS */}
+      <div className="controls">
+        <div className="row">
+          <div className={`key ${forward ? "active" : ""}`}></div>
+        </div>
+        <div className="row">
+          <div className={`key ${leftward ? "active" : ""}`}></div>
+          <div className={`key ${backward ? "active" : ""}`}></div>
+          <div className={`key ${rightward ? "active" : ""}`}></div>
+        </div>
+        <div className="row">
+          <div className={`key ${jump ? "active" : ""} large`}></div>
+        </div>
+      </div>
+    </div>
+  );
+}
+```
