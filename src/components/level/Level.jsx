@@ -2,7 +2,7 @@ import { useState, useRef, useMemo, useEffect } from "react";
 import * as THREE from "three";
 import { useControls } from "leva";
 import { useFrame } from "@react-three/fiber";
-import { useTexture } from "@react-three/drei";
+import { Float, Text, useTexture } from "@react-three/drei";
 import { CuboidCollider, RigidBody } from "@react-three/rapier";
 import Unicorn from "../models/animals/Unicorn";
 
@@ -49,6 +49,20 @@ export function BlockStart({ position = [0, 0, 0] }) {
 
   return (
     <group position={position}>
+      <Float floatIntensity={0.45} rotationIntensity={0.45}>
+        <Text
+          font="./fonts/shippori-mincho-b1-v21-japanese-800.woff"
+          scale={0.5}
+          maxWidth={2.5}
+          lineHeight={0.75}
+          textAlign="left"
+          position={[-0.75, 0.65, 0]}
+          rotation-y={0.45}
+        >
+          Marble race
+          <meshBasicMaterial toneMapped={false} />
+        </Text>
+      </Float>
       <RigidBody
         type="fixed"
         restitution={floorRestitution}
@@ -338,6 +352,14 @@ export function BlockEnd({ position = [0, 0, 0] }) {
 
   return (
     <group position={position}>
+      <Text
+        font="./fonts/shippori-mincho-b1-v21-japanese-800.woff"
+        scale={1}
+        position={[0, 0.75, 0]}
+      >
+        Finish
+        <meshBasicMaterial toneMapped={false} />
+      </Text>
       <RigidBody
         type="fixed"
         restitution={floorRestitution}
@@ -442,9 +464,8 @@ function Bounds({ length = 1 }) {
 export function Level({
   count = 5,
   types = [BlockSpinner, BlockAxe, BlockLimbo], // React Component Functions
-  seed = 0
+  seed = 0,
 }) {
-
   // Store blocks infomation
   const blocks = useMemo(() => {
     const blocks = [];

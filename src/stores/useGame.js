@@ -7,7 +7,7 @@ export default create(
       /**
        * BLOCKS
        */
-      blocksCount: 3,
+      blocksCount: 10,
       blocksSeed: 0,
 
       /**
