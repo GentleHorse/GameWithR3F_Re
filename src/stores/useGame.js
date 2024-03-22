@@ -1,16 +1,28 @@
 import { create } from "zustand";
+import { subscribeWithSelector } from "zustand/middleware";
 
-export default create((set) => {
-  return {
-    blocksCount: 3,
+export default create(
+  subscribeWithSelector((set) => {
+    return {
+      blocksCount: 3,
 
-    /**
-     * PHASES
-     */
-    phase: "ready",
+      /**
+       * PHASES
+       */
+      phase: "ready",
 
-    start: () => set({ phase: "playing" }),
-    restart: () => set({ phase: "ready" }),
-    end: () => set({ phase: "ended" }),
-  };
-});
+      start: () =>
+        set((state) => (state.phase === "ready" ? { phase: "playing" } : {})),
+
+      restart: () =>
+        set((state) =>
+          state.phase === "playing" || state.phase === "ended"
+            ? { phase: "ready" }
+            : {}
+        ),
+
+      end: () =>
+        set((state) => (state.phase === "playing" ? { phase: "ended" } : {})),
+    };
+  })
+);

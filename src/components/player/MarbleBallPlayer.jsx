@@ -191,6 +191,34 @@ export default function MarbleBallPlayer() {
   });
 
   /**
+   *  ~~ Here's a logic to reset the ball ~~
+   *
+   * We are listening to the phase changes
+   * and whenever it changes to "ready",
+   * reset() is triggered.
+   */
+  const reset = () => {
+    body.current.setTranslation({ x: 0, y: 5, z: 0 });
+    body.current.setLinvel({ x: 0, y: 0, z: 0 });  // Reset linear velocity
+    body.current.setAngvel({ x: 0, y: 0, z: 0 });  // Reset angular velocity
+  };
+
+  useEffect(() => {
+    const unsubscribeReset = useGame.subscribe(
+      (state) => state.phase,
+      (value) => {
+        if (value === "ready") {
+          reset();
+        }
+      }
+    );
+
+    return () => {
+      unsubscribeReset();
+    };
+  }, []);
+
+  /**
    * CAMERA ANIMATION
    */
   const [smoothedCameraPosition] = useState(

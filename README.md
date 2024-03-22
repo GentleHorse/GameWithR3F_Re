@@ -2128,6 +2128,104 @@ useFrame((state, delta) => {
 });
 ```
 
+### CMR-7-7. Game `phase` logic - limit phase chages
+```
+export default create((set) => {
+  return {
+    blocksCount: 3,
+
+    /**
+     * PHASES
+     */
+    phase: "ready",
+
+    start: () =>
+      set((state) => (state.phase === "ready" ? { phase: "playing" } : {})),
+
+    restart: () =>
+      set((state) =>
+        state.phase === "playing" || state.phase === "ended"
+          ? { phase: "ready" }
+          : {}
+      ),
+
+    end: () =>
+      set((state) => (state.phase === "playing" ? { phase: "ended" } : {})),
+  };
+});
+```
+
+### CMR-7-8. Reset the ball logic
+You need to subscribe to the changes on the store, but the store currently doesn't allow subscribing. So here needs a trick. You need to use Zustand middleware. In `useGame`, import `subscribeWithSelector` from `zustand/middleware`. <br><br>
+
+**useGame.js**
+```
+import { subscribeWithSelector } from "zustand/middleware";
+
+export default create(
+  subscribeWithSelector((set) => {
+    return {
+      blocksCount: 3,
+
+      /**
+       * PHASES
+       */
+      phase: "ready",
+
+      start: () =>
+        set((state) => (state.phase === "ready" ? { phase: "playing" } : {})),
+
+      restart: () =>
+        set((state) =>
+          state.phase === "playing" || state.phase === "ended"
+            ? { phase: "ready" }
+            : {}
+        ),
+
+      end: () =>
+        set((state) => (state.phase === "playing" ? { phase: "ended" } : {})),
+    };
+  })
+);
+```
+
+<br><br>
+
+Back to `MarbleBallPlayer.jsx`, you can subscribe to **the `phase` changes** by calling `useGame.subscribe`. In the `reset` function, you need to call three functions on the `body`; <br><br>
+
+- `setTranslation` to put the ball back at the origin
+- `setLinvel` to remove any translation force
+- `setAngvel` to remove any angular force <br><br>
+
+**MarbleBallPlayer.jsx**
+```
+const reset = () => {
+  body.current.setTranslation({ x: 0, y: 5, z: 0 });
+  body.current.setLinvel({ x: 0, y: 0, z: 0 });  // Reset linear velocity
+  body.current.setAngvel({ x: 0, y: 0, z: 0 });  // Reset angular velocity
+};
+
+useEffect(() => {
+  const unsubscribeReset = useGame.subscribe(
+    (state) => state.phase,
+    (value) => {
+      if (value === "ready") {
+        reset();
+      }
+    }
+  );
+
+  return () => {
+    unsubscribeReset();
+  };
+}, []);
+```
+
+### CMR-7-9. Toggle reset button
+
+
+
+
 
 
 
