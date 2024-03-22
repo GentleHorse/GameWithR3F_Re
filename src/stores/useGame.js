@@ -7,12 +7,22 @@ export default create(
       blocksCount: 3,
 
       /**
+       * TIME
+       */
+      startTime: 0,
+      endTime: 0,
+
+      /**
        * PHASES
        */
       phase: "ready",
 
       start: () =>
-        set((state) => (state.phase === "ready" ? { phase: "playing" } : {})),
+        set((state) =>
+          state.phase === "ready"
+            ? { phase: "playing", startTime: Date.now() }
+            : {}
+        ),
 
       restart: () =>
         set((state) =>
@@ -22,7 +32,11 @@ export default create(
         ),
 
       end: () =>
-        set((state) => (state.phase === "playing" ? { phase: "ended" } : {})),
+        set((state) =>
+          state.phase === "playing"
+            ? { phase: "ended", endTime: Date.now() }
+            : {}
+        ),
     };
   })
 );

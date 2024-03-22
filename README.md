@@ -2249,6 +2249,76 @@ export default function Interface() {
 }
 ```
 
+### CMR-7-10. Time
+
+### CMR-7-10-0. Objectives
+- Time starts as soon as the player starts moving the marble ball (when `phase` goes to `"playing"`)
+- Time stops when the marble reaches the end of the level (when `phase` goes to `"ended"`)
+- Time will reset to `0.00` when the user restarts the level
+
+### CMR-7-10-1. Logic
+Save the start time when the player start playing and save the end time when the player finishes the level. <br><be>
+
+- If the `phase` is `"playing"`, display the elapsed time on each frame
+- If the `phase` is `"ended"`, display the elapsed time between the start and the end
+
+### CMR-7-10-2. Code
+By saving timestamp with `Date.now()` at start & end of the game, you can display the time with minimum rerender cycles. <br><br>
+
+**useGame.js**
+```
+export default create(
+  subscribeWithSelector((set) => {
+    return {
+      blocksCount: 3,
+
+      /**
+       * TIME
+       */
+      startTime: 0,
+      endTime: 0,
+
+      /**
+       * PHASES
+       */
+      phase: "ready",
+
+      start: () =>
+        set((state) =>
+          state.phase === "ready"
+            ? { phase: "playing", startTime: Date.now() }
+            : {}
+        ),
+
+      restart: () =>
+        set((state) =>
+          state.phase === "playing" || state.phase === "ended"
+            ? { phase: "ready" }
+            : {}
+        ),
+
+      end: () =>
+        set((state) =>
+          state.phase === "playing"
+            ? { phase: "ended", endTime: Date.now() }
+            : {}
+        ),
+    };
+  })
+);
+```
+<br>
+
+Time needs to be updated on each frame but the `Interface` component is outside the `<Canvas>`, so `useFrame` cannot be used here. Using `requestAnimationFrame` could be one option, but R3F already handles frame animations and dealing with destructuring the components properly is a bit cumbersome. Thus, here is the solution. R3F already took care of this kind of case and the solution is using `addEffect` hook that can be used **ouside of `<Canvas>`** and that will be executed synchronously with the `useFrame`. <br><br>
+
+
+**Interface.jsx**
+```
+
+```
+
+
+
 
 
 
