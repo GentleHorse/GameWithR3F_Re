@@ -2314,7 +2314,123 @@ Time needs to be updated on each frame but the `Interface` component is outside 
 
 **Interface.jsx**
 ```
+const time = useRef();
 
+useEffect(() => {
+  const unsubscribeEffect = addEffect(() => {
+    const state = useGame.getState();    // Fetch all states
+
+    let elapsedTime = 0;
+
+    if (state.phase === "playing") {
+      elapsedTime = Date.now() - state.startTime;
+    } else if (state.phase === "ended") {
+      elapsedTime = state.endTime - state.startTime;
+    }
+
+    elapsedTime /= 1000;
+    elapsedTime = elapsedTime.toFixed(2);
+
+    if (time.current) {                 // In case the ref is not ready
+      time.current.textContent = elapsedTime;
+    }
+  });
+
+  return () => {
+    unsubscribeEffect();
+  };
+}, []);
+
+....
+
+  <div ref={time} className="time"> 0.00 </div>
+
+```
+
+### CMR-7-11. Randomize level
+In order to randomize the level everytime the player restarts the game, force the `useMemo` in the `Level` component to be called again by adding a variable to the dependencies that it will be changed only when the player restart. <br><br>
+
+**useGame.js**
+```
+export default create(
+  subscribeWithSelector((set) => {
+    return {
+      /**
+       * BLOCKS
+       */
+      blocksCount: 3,
+      blocksSeed: 0,
+
+      ....
+
+      /**
+       * PHASES
+       */
+      phase: "ready",
+
+      ....
+
+      restart: () =>
+        set((state) =>
+          state.phase === "playing" || state.phase === "ended"
+            ? { phase: "ready", blocksSeed: Math.random() }
+            : {}
+        ),
+
+      ....
+
+    };
+  })
+);
+```
+
+<br>
+
+**Experience.jsx**
+```
+export default function Experience() {
+  ....
+  const blocksSeed = useGame((state) => state.blocksSeed);
+
+  return (
+    <>
+      ....
+
+        <Level count={blocksCount} seed={blocksSeed} />
+      
+      ....
+      
+    </>
+  );
+}
+```
+
+<br>
+
+**Level.jsx**
+```
+export function Level({
+  count = 5,
+  types = [BlockSpinner, BlockAxe, BlockLimbo], // React Component Functions
+  seed = 0
+}) {
+
+  // Store blocks infomation
+  const blocks = useMemo(() => {
+    const blocks = [];
+
+    for (let i = 0; i < count; i++) {
+      const typeIndex = Math.floor(Math.random() * types.length);
+      const type = types[typeIndex];
+      blocks.push(type);
+    }
+
+    return blocks;
+  }, [count, types, seed]);
+
+  ....
+  
+}
 ```
 
 
