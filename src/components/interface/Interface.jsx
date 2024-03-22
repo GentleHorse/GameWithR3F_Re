@@ -1,7 +1,10 @@
 import { useKeyboardControls } from "@react-three/drei";
-import { useEffect } from "react";
+import useGame from "../../stores/useGame.js";
 
 export default function Interface() {
+  /**
+   * KEYBOARD INPUT STATES
+   */
   const forward = useKeyboardControls((state) => state.forward);
   const backward = useKeyboardControls((state) => state.backward);
   const leftward = useKeyboardControls((state) => state.leftward);
@@ -9,13 +12,23 @@ export default function Interface() {
   const jump = useKeyboardControls((state) => state.jump);
   const activateFly = useKeyboardControls((state) => state.activateFly);
 
+  /**
+   * THE GAME PHASE STATE AND RESTART METHOD
+   */
+  const phase = useGame((state) => state.phase);
+  const restart = useGame((state) => state.restart);
+
   return (
     <div className="interface">
       {/* TIME */}
       <div className="time">0.00</div>
 
       {/* RESTART */}
-      <div className="restart">Restart</div>
+      {phase === "ended" && (
+        <div className="restart" onClick={restart}>
+          Restart
+        </div>
+      )}
 
       {/* CONTROLS */}
       <div className="controls">

@@ -2222,7 +2222,32 @@ useEffect(() => {
 ```
 
 ### CMR-7-9. Toggle reset button
+```
+export default function Interface() {
 
+  ....
+
+  const phase = useGame((state) => state.phase);
+  const restart = useGame((state) => state.restart);
+
+  return (
+    <div className="interface">
+      
+      ....
+
+      {/* RESTART */}
+      {phase === "ended" && (
+        <div className="restart" onClick={restart}>
+          Restart
+        </div>
+      )}
+
+      ....
+
+    </div>
+  );
+}
+```
 
 
 
