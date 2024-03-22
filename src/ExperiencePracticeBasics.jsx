@@ -3,7 +3,7 @@ import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 import { Environment, OrbitControls, useGLTF } from "@react-three/drei";
 import { Geometry, Base, Addition } from "@react-three/csg";
-import Lights from "./components/utils/Lights.jsx";
+import Lights from "./components/util-components/Lights.jsx";
 import { Perf } from "r3f-perf";
 import {
   CuboidCollider,

@@ -4,6 +4,7 @@ import { useFrame } from "@react-three/fiber";
 import { useKeyboardControls } from "@react-three/drei";
 import { RigidBody, useRapier } from "@react-three/rapier";
 import { useControls } from "leva";
+import useGame from "../../stores/useGame.js";
 
 export default function MarbleBallPlayer() {
   /**
@@ -76,6 +77,37 @@ export default function MarbleBallPlayer() {
 
   // Import "rapier" & "world" property from Rapier library
   const { rapier, world } = useRapier();
+
+  /**
+   *  ~~ Here's a logic to change the game phase ~~
+   */
+  const start = useGame((state) => state.start);
+  const restart = useGame((state) => state.restart);
+  const end = useGame((state) => state.end);
+  const blocksCount = useGame((state) => state.blocksCount);
+
+  useEffect(() => {
+    const unsubscribeAny = subscribeKeys(() => start());
+
+    return () => {
+      return unsubscribeAny();
+    };
+  }, []);
+
+  useFrame((state, delta) => {
+    // Get the marble ball position
+    const bodyPosition = body.current.translation();
+
+    // Successfully reached the goal
+    if (bodyPosition.z < -(blocksCount * 4 + 2)) {
+      end();
+    }
+
+    // Fall from the level
+    if (bodyPosition.y < -4) {
+      restart();
+    }
+  });
 
   /**
    *  ~~ Here's a logic to make the ball jump ~~

@@ -443,6 +443,7 @@ export function Level({
   count = 5,
   types = [BlockSpinner, BlockAxe, BlockLimbo], // React Component Functions
 }) {
+
   // Store blocks infomation
   const blocks = useMemo(() => {
     const blocks = [];

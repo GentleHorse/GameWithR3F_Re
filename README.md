@@ -2003,3 +2003,133 @@ export default function Interface() {
   );
 }
 ```
+
+## CMR-7. Game mechanics
+
+### CMR-7-1. Objectives
+- Restart button to be clickable and only be visible when we finish the level
+- The timer to display accurate information
+- Reset the marble if it falls out of the map
+
+### CMR-7-2. Global state
+Above objectives concern multiple components. Thus, there needs to be a way to have information and methods shared among all of those related components. This can be done with **Zustand**. (cf. `KeybordControls` is using Zustand behind the scene.) Add Zustand to the depedencies by running `npm install zustand@4.4` in the terminal. <br><br>
+
+- [Zustand Documentation](https://docs.pmnd.rs/zustand/getting-started/introduction) <br><br>
+
+### CMR-7-3. Zustand - create a store
+Global states are commonly called **"stores"** and it's good practice to create them in a separate file. You need to send a function that will return your store data as an object. <br><br>
+
+**useGame.js**
+```
+import { create } from "zustand";
+
+export default create(() => {
+    return {
+        blocksCount: 3
+    }
+})
+```
+<br>
+
+**Experience.js**
+```
+import useGame from "./stores/useGame.js";
+
+export default function Experience() {
+  const blocksCount = useGame((state) => state.blocksCount);
+
+  return (
+
+    ....
+
+  );
+}
+```
+
+### CMR-7-4. Game `phase` logic
+- When the game is started, `phase` will be set to `"ready"`
+- When the playing is started by using any of the `W` `A` `S` `D` or `Space` keys, `phase` will be set to `"playing"`
+- When the player reaches the end of the level, `"phase"` will be set to `ended` <br><br>
+
+This way, at any time and anywhere, you can be aware of the current phase and decide what to do.
+
+### CMR-7-5. Game `phase` logic - `start` method
+In this `start` method, the state needs to be updated so that `phase` goes from `"ready"` to `"playing"`. Updating the state can be done with the `set` function that can be retrieved as an argument of the function you sent to `create()`. <br><br>
+
+The phase needs to go from `"ready"` to `"playing"` whenever the user presses any of the control keys.
+
+**useGame.js**
+```
+export default create((set) => {
+  return {
+    blocksCount: 3,
+
+    /**
+     * PHASES
+     */
+    phase: "ready",
+
+    start: () => set({ phase: "playing" }),
+    restart: () => set({ phase: "ready" }),
+    end: () => set({ phase: "ended" }),
+  };
+});
+
+```
+<br>
+
+**MarbleBallPlayer.jsx**
+```
+const start = useGame((state) => state.start);
+
+useEffect(() => {
+  const unsubscribeAny = subscribeKeys(() => start());
+
+  return () => {
+    return unsubscribeAny();
+  };
+}, []);
+```
+
+### CMR-7-6. Game `phase` logic - `end` method
+```
+const end = useGame((state) => state.end);
+const blocksCount = useGame((state) => state.blocksCount);
+
+....
+
+useFrame((state, delta) => {
+  // Get the marble ball position
+  const bodyPosition = body.current.translation();
+
+  if (bodyPosition.z < -(blocksCount * 4 + 2)) {
+    end();
+  }
+});
+```
+
+### CMR-7-6. Game `phase` logic - `restart` method
+The game is supposed to restart when the marble falls from the level. In this game, the threshold is `-4`.
+
+```
+const restart = useGame((state) => state.restart);
+
+....
+
+useFrame((state, delta) => {
+  // Get the marble ball position
+  const bodyPosition = body.current.translation();
+
+  ....
+
+  if (bodyPosition.y < -4) {
+    restart();
+  }
+});
+```
+
+
+
+
+
+
