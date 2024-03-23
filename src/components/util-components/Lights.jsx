@@ -7,11 +7,11 @@ export default function Lights() {
   useFrame((state) => {
     const cameraPosition = state.camera.position;
 
-    // light.current.position.copy(cameraPosition);
+    light.current.position.copy(cameraPosition);
 
-    light.current.position.z = cameraPosition.z + 1 -4;
-    light.current.target.position.z = cameraPosition.z - 4;
-    light.current.target.updateMatrixWorld();
+    // light.current.position.z = cameraPosition.z + 1 -4;
+    // light.current.target.position.z = cameraPosition.z - 4;
+    // light.current.target.updateMatrixWorld();
   });
 
   return (
