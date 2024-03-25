@@ -7,11 +7,11 @@ export default function Lights() {
   useFrame((state) => {
     const cameraPosition = state.camera.position;
 
-    light.current.position.copy(cameraPosition);
+    // light.current.position.copy(cameraPosition);
 
-    // light.current.position.z = cameraPosition.z + 1 -4;
-    // light.current.target.position.z = cameraPosition.z - 4;
-    // light.current.target.updateMatrixWorld();
+    light.current.position.z = cameraPosition.z + 1 -4;
+    light.current.target.position.z = cameraPosition.z - 4;
+    light.current.target.updateMatrixWorld();
   });
 
   return (
@@ -19,8 +19,8 @@ export default function Lights() {
       <directionalLight
         ref={light}
         castShadow
-        position={[4, 4, 1]}
-        intensity={4.5}
+        position={[4, 2, 0]}
+        intensity={6}
         shadow-mapSize={[1024, 1024]}
         shadow-camera-near={1}
         shadow-camera-far={10}
@@ -29,7 +29,7 @@ export default function Lights() {
         shadow-camera-bottom={-10}
         shadow-camera-left={-10}
       />
-      <ambientLight intensity={1.5} />
+      <ambientLight intensity={1.2} />
     </>
   );
 }

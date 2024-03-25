@@ -5,6 +5,7 @@ import { useKeyboardControls } from "@react-three/drei";
 import { RigidBody, useRapier } from "@react-three/rapier";
 import { useControls } from "leva";
 import useGame from "../../stores/useGame.js";
+import { materials } from "../../utils/materials.js";
 
 export default function MarbleBallPlayer() {
   /**
@@ -13,57 +14,30 @@ export default function MarbleBallPlayer() {
   const radius = 0.3;
 
   /**
-   * GUI - OUTER FRAME MATERIAL
+   * GUI - SPHERE MATERIAL
    */
   const {
-    flatShadingOuter,
-    colorOuter,
-    metalnessOuter,
-    roughnessOuter,
-    wireframeOuter,
-  } = useControls("marble ball - outer frame", {
-    flatShadingOuter: false,
-    colorOuter: "#8d6a1a",
-    metalnessOuter: {
+    flatShading,
+    color,
+    metalness,
+    roughness,
+    wireframe,
+  } = useControls("marble ball", {
+    flatShading: false,
+    color: "#750000",
+    metalness: {
       value: 0.2,
       min: 0,
       max: 1,
       step: 0.01,
     },
-    roughnessOuter: {
+    roughness: {
       value: 0.1,
       min: 0,
       max: 1,
       step: 0.01,
     },
-    wireframeOuter: true,
-  });
-
-  /**
-   * GUI - INNER SPHERE MATERIAL
-   */
-  const {
-    flatShadingInner,
-    colorInner,
-    metalnessInner,
-    roughnessInner,
-    wireframeInner,
-  } = useControls("marble ball - inner sphere", {
-    flatShadingInner: true,
-    colorInner: "#8c2c19",
-    metalnessInner: {
-      value: 0.2,
-      min: 0,
-      max: 1,
-      step: 0.01,
-    },
-    roughnessInner: {
-      value: 0.1,
-      min: 0,
-      max: 1,
-      step: 0.01,
-    },
-    wireframeInner: false,
+    wireframe: false,
   });
 
   /**
@@ -261,27 +235,17 @@ export default function MarbleBallPlayer() {
       angularDamping={0.5}
       position={[0, 1, 0]}
     >
-      {/* OUTER FRAME */}
-      <mesh castShadow>
-        <icosahedronGeometry args={[radius, 1]} />
-        <meshStandardMaterial
-          flatShading={flatShadingOuter}
-          color={colorOuter}
-          metalness={metalnessOuter}
-          roughness={roughnessOuter}
-          wireframe={wireframeOuter}
-        />
-      </mesh>
-
-      {/* INNER SPHERE */}
       <mesh castShadow>
         <icosahedronGeometry args={[radius - 0.01, 1]} />
         <meshStandardMaterial
-          flatShading={flatShadingInner}
-          color={colorInner}
-          metalness={metalnessInner}
-          roughness={roughnessInner}
-          wireframe={wireframeInner}
+          flatShading={flatShading}
+          color={color}
+          metalness={metalness}
+          roughness={roughness}
+          wireframe={wireframe}
+          aoMap={materials.floor.floor01.aoMap}
+          normalMap={materials.floor.floor01.normalMap}
+          roughnessMap={materials.floor.floor01.roughnessMap}
         />
       </mesh>
     </RigidBody>

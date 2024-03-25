@@ -14,7 +14,7 @@ export default function Experience() {
     <>
       <Background />
 
-      <axesHelper />
+      {/* <axesHelper /> */}
 
       <Perf position="top-left" />
 

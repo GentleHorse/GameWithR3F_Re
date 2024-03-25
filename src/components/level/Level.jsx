@@ -5,6 +5,7 @@ import { useFrame } from "@react-three/fiber";
 import { Float, Text, useTexture } from "@react-three/drei";
 import { CuboidCollider, RigidBody } from "@react-three/rapier";
 import Unicorn from "../models/animals/Unicorn";
+import { materials } from "../../utils/materials.js";
 
 import FloorRoughnessTexture from "../../../public/textures/SurfaceImperfections003_1K_var1.jpg";
 import FloorNormalTexture from "../../../public/textures/SurfaceImperfections003_1K_Normal.jpg";
@@ -15,12 +16,15 @@ import FloorNormalTexture from "../../../public/textures/SurfaceImperfections003
 const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
 
 /**
- * MATERIAL COLOR
+ * MATERIAL
  */
-const edgeBlockFloorColor = "#4d5139";
-const trapBlockFloorColor = "#183229";
-const trapBlockObstacleColor = "#64363C";
-const wallColor = "#535953";
+const edgeBlockFloorColor = "#202020";
+const trapBlockFloorColor = "#1e2421";
+const trapBlockObstacleColor = "#dec223";
+const wallColor = "#101010";
+
+const obstacleNormalMap = materials.obstacle.obstacle01.normalMap;
+const obstacleRoughnessMap = materials.obstacle.obstacle01.roughnessMap;
 
 /**
  * Floor params
@@ -51,8 +55,8 @@ export function BlockStart({ position = [0, 0, 0] }) {
     <group position={position}>
       <Float floatIntensity={0.45} rotationIntensity={0.45}>
         <Text
-          font="./fonts/shippori-mincho-b1-v21-japanese-800.woff"
-          scale={0.5}
+          font="./fonts/PixelCowboy.ttf"
+          scale={0.3}
           maxWidth={2.5}
           lineHeight={0.75}
           textAlign="left"
@@ -158,7 +162,11 @@ export function BlockSpinner({ position = [0, 0, 0] }) {
       >
         <mesh
           geometry={boxGeometry}
-          material={new THREE.MeshStandardMaterial({ color: obstacleColor })}
+          material={new THREE.MeshStandardMaterial({ 
+            color: obstacleColor,
+            normalMap: obstacleNormalMap,
+            roughnessMap: obstacleRoughnessMap
+           })}
           scale={[3.5, 0.3, 0.3]}
           castShadow
         />
@@ -240,7 +248,11 @@ export function BlockLimbo({ position = [0, 0, 0] }) {
       >
         <mesh
           geometry={boxGeometry}
-          material={new THREE.MeshStandardMaterial({ color: obstacleColor })}
+          material={new THREE.MeshStandardMaterial({ 
+            color: obstacleColor,
+            normalMap: obstacleNormalMap,
+            roughnessMap: obstacleRoughnessMap
+           })}
           scale={[3.5, 0.3, 0.3]}
           castShadow
         />
@@ -322,7 +334,11 @@ export function BlockAxe({ position = [0, 0, 0] }) {
       >
         <mesh
           geometry={boxGeometry}
-          material={new THREE.MeshStandardMaterial({ color: obstacleColor })}
+          material={new THREE.MeshStandardMaterial({ 
+            color: obstacleColor,
+            normalMap: obstacleNormalMap,
+            roughnessMap: obstacleRoughnessMap
+           })}
           scale={[1.5, 1.5, 0.3]}
           castShadow
         />
@@ -353,8 +369,8 @@ export function BlockEnd({ position = [0, 0, 0] }) {
   return (
     <group position={position}>
       <Text
-        font="./fonts/shippori-mincho-b1-v21-japanese-800.woff"
-        scale={1}
+        font="./fonts/PixelCowboy.ttf"
+        scale={0.5}
         position={[0, 0.75, 0]}
       >
         Finish
