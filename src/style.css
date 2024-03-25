@@ -63,6 +63,9 @@ body,
   bottom: 10%;
   left: 0;
   width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
 }
 
 .controls .row {
@@ -78,8 +81,15 @@ body,
   background: #ffffff44;
 }
 
-.controls .key.large {
+.controls .key.horizontal {
   width: 84px;
+}
+
+.controls .key.vertical {
+  margin-top: 36px;
+  margin-right: 10px;
+  width: 30px;
+  height: 52px;
 }
 
 .controls .key.active {

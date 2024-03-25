@@ -1,3 +1,5 @@
+![hero image](/public/images/screenshots/hero-image.png)<br>
+
 # Working Physics with Rapier in R3F
 
 ## WPR-0. Links

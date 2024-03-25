@@ -66,16 +66,21 @@ export default function Interface() {
 
       {/* CONTROLS */}
       <div className="controls">
-        <div className="row">
-          <div className={`key ${forward ? "active" : ""}`}></div>
+        <div className="column">
+          <div className={`key ${activateFly ? "active" : ""} vertical`}></div>
         </div>
-        <div className="row">
-          <div className={`key ${leftward ? "active" : ""}`}></div>
-          <div className={`key ${backward ? "active" : ""}`}></div>
-          <div className={`key ${rightward ? "active" : ""}`}></div>
-        </div>
-        <div className="row">
-          <div className={`key ${jump ? "active" : ""} large`}></div>
+        <div className="column">
+          <div className="row">
+            <div className={`key ${forward ? "active" : ""}`}></div>
+          </div>
+          <div className="row">
+            <div className={`key ${leftward ? "active" : ""}`}></div>
+            <div className={`key ${backward ? "active" : ""}`}></div>
+            <div className={`key ${rightward ? "active" : ""}`}></div>
+          </div>
+          <div className="row">
+            <div className={`key ${jump ? "active" : ""} horizontal`}></div>
+          </div>
         </div>
       </div>
     </div>

@@ -95,7 +95,7 @@ export default function MarbleBallPlayer() {
 
     // Jump is allowed only if the ball is close enough to the floor
     if (hit.toi < 0.15) {
-      body.current.applyImpulse({ x: 0, y: 1, z: 0 });
+      body.current.applyImpulse({ x: 0, y: 0.6, z: 0 });
     }
   };
 
@@ -156,7 +156,7 @@ export default function MarbleBallPlayer() {
       torque.z -= torqueStrength;
     }
     if (jump & activateFly) {
-      impulse.y += impluseStrength * 5;
+      impulse.y += impluseStrength * 2.5;
     }
 
     // Set force & roll vectors to RigidBody
