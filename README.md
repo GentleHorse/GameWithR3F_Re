@@ -1,5 +1,10 @@
 ![hero image](/public/images/screenshots/hero-image.png)<br>
 
+##### How to play "Marble Race" game
+- `W`, `A`, `S`, `D`, `ArrowUp`, `ArrowDown`, `ArrowLeft`, `ArrowRight`: move the ball
+- `Space`: jump
+- `Shift` + `Space`: hover in the air
+
 # Working Physics with Rapier in R3F
 
 ## WPR-0. Links
